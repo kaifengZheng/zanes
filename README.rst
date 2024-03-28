@@ -27,6 +27,12 @@ A wrapper for XAS analysis and fitting
 
 Introduction
 ------------
+Installation
+------------
+
+.. code-block:: shell
+
+   git clone https://github.com/kaifengZheng/zanes.git
 
 Usage
 -----

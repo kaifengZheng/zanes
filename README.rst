@@ -81,11 +81,11 @@ Usage
           .. code-block:: python
 
              exp_data.process_data(data_param)
-* fitting data
-Two parameter dictionaries are used in fitting process:
-  - fitting parameters:
+  * fitting data
+    Two parameter dictionaries are used in fitting process:
+    - fitting parameters:
 
-  .. code-block:: JSON
+    .. code-block:: JSON
 
         data_param={'pre_start':-350,
                     'pre_end':-70,
@@ -94,9 +94,9 @@ Two parameter dictionaries are used in fitting process:
                     'kweight':2,'rbkg':1.5,
                     'E0':11563.5,
                     'krange':[2,15]}
-  - fitting range parameters
+    - fitting range parameters
   
-  .. code-block:: JSON
+    .. code-block:: JSON
 
         fit_range_param={'kmin':2,
                          'kmax':15,
@@ -106,19 +106,19 @@ Two parameter dictionaries are used in fitting process:
                          'rmin':1.646,
                          'rmax':3.292}
 
- - running and write fitting files(mpi version is under development, use mpi=False for now)
+    - running and write fitting files(mpi version is under development, use mpi=False for now)
  
- .. code-block:: python
+    .. code-block:: python
 
-      surfix='_rbkg1'
-      foldername='results'
-      save_path=join(foldername,'pd'+surfix+'.txt')
-      dset,out,report,path=exp_data.run_fit_batch(param_dict=param_dict,fit_range_param=fit_range_param,fitpath_num=[0],feff_folder='feff',save_name=save_path,mpi=False,core=10,write=True)
-      report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
-      exp_data.write_fitted_data(dset,'Pd',foldername,suffix='_rbkg1')
-      output_fit = join(foldername,file_name[:-4]+'_rbkg1.toml')
-      with open(output_fit, "w") as f:
-           toml.dump(report_sort,f)
+         surfix='_rbkg1'
+         foldername='results'
+         save_path=join(foldername,'pd'+surfix+'.txt')
+         dset,out,report,path=exp_data.run_fit_batch(param_dict=param_dict,fit_range_param=fit_range_param,fitpath_num=[0],feff_folder='feff',save_name=save_path,mpi=False,core=10,write=True)
+         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
+         exp_data.write_fitted_data(dset,'Pd',foldername,suffix='_rbkg1')
+         output_fit = join(foldername,file_name[:-4]+'_rbkg1.toml')
+         with open(output_fit, "w") as f:
+            toml.dump(report_sort,f)
 
  
 

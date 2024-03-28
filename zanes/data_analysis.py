@@ -4,6 +4,7 @@ from larch.xafs import find_e0,pre_edge, autobk, xftf, xftr
 from larch.xafs import cauchy_wavelet
 from larch import Group
 from os.path import basename,join,exists
+from sys import platform
 from larch.xafs.feffit import feffit_transform,feffit_dataset,feffit,feffit_report
 from larch.fitting import param,param_group
 from larch.xafs import feffpath,feffrunner
@@ -495,14 +496,24 @@ class zanes_data_analysis:
                 # sa_check2.append(i-(batch_index-1)*batch_size)
                 dset.append(feffit_dataset(data=self.data[i],pathlist=[paths[i-(batch_index-1)*batch_size]],transform=trans))
             true_batch_size=batch_size
-            out=feffit(pars,dset,fix_unused_variables=False)
+            
+            #linux has problem with global constraints, so need to set fix_unused_variables=False
+            if platform=='linux':
+                out=feffit(pars,dset,fix_unused_variables=False)
+            else:
+                out=feffit(pars,dset)
             report=feffit_report(out)
         if batch_index==batch_num:
             for i in range((batch_index-1)*batch_size,len(self.data)):
 
                 dset.append(feffit_dataset(data=self.data[i],pathlist=[paths[i-(batch_index-1)*batch_size]],transform=trans))
             true_batch_size=len(self.data)-batch_size*(batch_index-1)
-            out=feffit(pars,dset,fix_unused_variables=False)
+            
+            #linux has problem with global constraints, so need to set fix_unused_variables=False
+            if platform=='linux':
+                out=feffit(pars,dset,fix_unused_variables=False)
+            else:
+                out=feffit(pars,dset)
             report=feffit_report(out)
         # print(sa_check)
         # print(sa_check2)

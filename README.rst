@@ -37,6 +37,7 @@ Usage
    * other are under development(coming soon...)
 2. Data processing(back ground removal, flattening and plotting)
    * import data
+
      .. code-block:: python
 
         from zanes.data_analysis import zanes_data_analysis as zanes_data_analysis
@@ -44,12 +45,11 @@ Usage
         filename='test_data/pd.prj'
         exp_data=zda(filename,datatype='Athena',batch_size=None,read_range=None)
 
-     code . . .
-
 
    * Data processing and plotting
      To process the data, one requires to specify parameters, which are given by a dictionary:
-     .. code-block :: python
+
+     .. code-block:: JSON
 
         data_param={'pre_start':-350,
                     'pre_end':-70,
@@ -59,20 +59,26 @@ Usage
                     'E0':11563.5,
                     'krange':[2,15]}
 
-     code . . .
-        - process one data with plotting
-          .. code-block :: python
-          dp(exp_data.data[1],pre_start=data_param['pre_start'],
+    - process one data with plotting
+
+          .. code-block:: python
+
+              dp(exp_data.data[1],pre_start=data_param['pre_start'],
                       pre_end=data_param['pre_end'],
                post_start=data_param['post_start'],
                post_end=data_param['post_end'],
                kweight=data_param['kweight'],rbkg=data_param['rbkg'],
                krange=data_param['krange'],plot=True)
-          code . . .
-        - process all data
-          .. code-block :: python
-          exp_data.process_data(data_param)
-          code . . .
+           
+
+
+
+    - process all data
+
+          .. code-block:: python
+
+             exp_data.process_data(data_param)
+
 
 
 

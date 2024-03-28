@@ -105,7 +105,8 @@ Two parameter dictionaries are used in fitting process:
                          'window':'hanning',
                          'rmin':1.646,
                          'rmax':3.292}
- - running and write fitting(mpi version is under development, use mpi=False for now)
+
+ - running and write fitting files(mpi version is under development, use mpi=False for now)
  
  .. code-block:: python
 

@@ -20,16 +20,16 @@ from re import search,match,split
 
 
 
-def data_analysis(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1.5,
+def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1.5,
                   plot=False,kwin='hanning',krange=[2,8],nnorm=3,**kwargs):
 
-    if 'e0' not in group.keys() or group.e0 is None or e0 is None:
+    if 'e0' not in group.keys() and group.e0 is None and e0 is None:
         find_e0(group)
         e0=group.e0
     interfunc=interp1d(group.energy,group.mu)
-    pre_edge(group,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm,**kwargs)
-    autobk(energy=group.energy,mu=group.mu,group=group,e0=group.e0,rbkg=rbkg)
-    xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)   
+    pre_edge(group,e0=e0,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm,**kwargs)
+    autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg)
+    xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
     if plot:
         fig,ax=plt.subplots(2,2,figsize=(8,5))
         ax[0,0].plot(group.energy,group.mu,label=group.label)
@@ -64,13 +64,13 @@ def data_analysis(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_en
 def data_analysis_xanes(group,pre_start=-30,pre_end=-10,post_start=20,post_end=900,e0=None,
                   plot=False,nnorm=3,energy_range=[],**kwargs):
 
-    if 'e0' not in group.keys() or group.e0 is None or e0 is None:
+    if 'e0' not in group.keys() and group.e0 is None and e0 is None:
         find_e0(group)
         e0=group.e0
     interfunc=interp1d(group.energy,group.mu)
     pre_edge(group,e0=e0,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm,**kwargs)
     # autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg,nknots=nknots)
-    # xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)   
+    # xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
     if plot:
         fig,ax=plt.subplots(1,2,figsize=(8,5))
         ax[0].plot(group.energy,group.mu,label=group.label)
@@ -163,7 +163,7 @@ def BF_analysis(group,kweight=3,rrange=[],krange=[]):
     # chiq2=interp1d(BF_group.q,BF_group.chiq)(BF_group.k)
     # BF_group2=Group(k=BF_group.k,chi=chiq)
     # xftf(k=BF_group2.k,chi=BF_group2.chi, dk=2,group=BF_group2,kweight=0,kmin=krange[0],kmax=krange[1],window='hanning')
-    
+
     fig,ax=plt.subplots(2,1,figsize=(8,5))
     ax[0].plot(group.k,group.k**kweight*group.chi,color='b',label='chi')
     ax[0].plot(group.q,group.chiq,color='r',label='Back Fourier Transform')
@@ -198,16 +198,18 @@ def find_nearest_idx(array, value):
     idx = (np.abs(array - value)).argmin()
     return idx
 
-class data_processing_minibatch:
-     
-     def __init__(self,filename:str,datatype:str,batch_size:int=0,read_range:int|list[int]|np.ndarray|None=None):
+class zanes_data_analysis:
+
+     def __init__(self,filename:str,datatype:str,batch_size:int|None=None,read_range:int|list[int]|np.ndarray|None=None):
         self.data=[]
         self.filename=filename
         self.datatype=datatype
         self.read_range=read_range
         self.read_data(self.filename,self.datatype,read_range=self.read_range)
         self.batch_size=batch_size
-        if type(read_range)==int and read_range!=None:
+        if batch_size==None:
+            batch_size=len(self.data)
+        elif type(read_range)==int and read_range!=None:
             self.batch_num=read_range//batch_size
         elif type(read_range)==list and read_range!=[] and len(read_range)!=1:
             self.batch_num=(read_range[1]-read_range[0]+1)//batch_size
@@ -217,7 +219,7 @@ class data_processing_minibatch:
             self.batch_num=len(self.data)//batch_size
         else:
             raise ValueError('read_range is not correct')
-            
+
      def read_data(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
             if isinstance(read_range,int) and read_range is not None:
                 scan=0
@@ -291,17 +293,21 @@ class data_processing_minibatch:
                             dict_data[j]=[]
                         dict_data[j].append(float(data_lines[j]))
             return pd.DataFrame(dict_data)
-        
+
      def process_data(self,data_dict:dict,plot:bool=False):
         self.data_processing_params=data_dict
         for d in self.data:
-            data_analysis(d,pre_start=data_dict['pre_start'],
+            if 'e0' in data_dict.keys():
+                e0=data_dict['e0']
+            else:
+                e0=None
+            data_processing(d,e0=e0,pre_start=data_dict['pre_start'],
                 pre_end=data_dict['pre_end'],
                 post_start=data_dict['post_start'],
                 post_end=data_dict['post_end'],
                 kweight=data_dict['kweight'],rbkg=data_dict['rbkg'],
-                krange=data_dict['krange'],plot=False)
-        
+                krange=data_dict['krange'],plot=plot)
+
      def fit_param_batch(self,batch_size:int,**p)->param_group:
         keys=p.keys()
         fit_param_get={}
@@ -352,15 +358,15 @@ class data_processing_minibatch:
                     for i in range(batch_size):
                         suffix=k_ss2.split('_')[1]
                         fit_param_get[f'{k_ss2}_{i}']=param(p['ss2'][k_ss2]['initial'],vary=p['ss2'][k_ss2]['vary'])
-                        fit_param_get[f'theta_{suffix}']=param(p['ss2'][k_ss2]['thermal']['theta']['initial'],vary=p['ss2'][k_ss2]['thermal']['theta']['vary']) 
+                        fit_param_get[f'theta_{suffix}']=param(p['ss2'][k_ss2]['thermal']['theta']['initial'],vary=p['ss2'][k_ss2]['thermal']['theta']['vary'])
             for dr_k in p['delr'].keys():
                 if p['delr'][dr_k]['global']:
                     fit_param_get[dr_k]=param(p['delr'][dr_k]['initial'],vary=p['delr'][dr_k]['vary'])
                 else:
                     for i in range(batch_size):
-                        fit_param_get[f'{dr_k}_{i}']=param(p['delr'][dr_k]['initial'],vary=p['delr'][dr_k]['vary']) 
+                        fit_param_get[f'{dr_k}_{i}']=param(p['delr'][dr_k]['initial'],vary=p['delr'][dr_k]['vary'])
         return param_group(**fit_param_get)
-    
+
      def path_param_batch(self,feff_folder:str,fitpath_num:list[int],rules:dict,temp=[],batch_size:int=0)->list:
         #for now, only consider the first path
         keys=rules.keys()
@@ -391,17 +397,17 @@ class data_processing_minibatch:
                             ss2=ss2_k[j]
                     else:
                             ss2=f'{ss2_k[j]}_{i}'
-                else: 
+                else:
                     suffix=ss2_k[j].split('_')[1]
                     if rules['ss2'][ss2_k[j]]['thermal']=='Einstein':
                         ss2=f'{ss2_k[j]}+sigma2_eins({temp[i]},theta_{suffix})'
                     elif rules['ss2'][ss2_k[j]]['thermal']=='Debye':
-                        ss2=f'{ss2_k[j]}+sigma2_debye({temp[i]},theta_{suffix})'   
+                        ss2=f'{ss2_k[j]}+sigma2_debye({temp[i]},theta_{suffix})'
                 if rules['delr'][dr_k[j]]['global']:
                     delr=dr_k[j]
                 if not rules['delr'][dr_k[j]]['global']:
                     delr=f'{dr_k[j]}_{i}'
-                
+
                 paths.append(feffpath(f"{feff_folder}/{feff_pathes['file'][fitpath_num[j]]}",
                                     s02=s02,
                                     degen=1,
@@ -419,7 +425,7 @@ class data_processing_minibatch:
                 self.feff_call(join(feff_folder,'feff.inp'))
             else:
                 raise ValueError('feff.inp is not in the folder')
-        else:    
+        else:
             with open(join(feff_folder,'files.dat'),'r') as f:
                 lines=f.readlines()
             num=0
@@ -439,10 +445,10 @@ class data_processing_minibatch:
         for k_N in parm_dict['N'].keys():
             rules['N'][k_N]={"vary":parm_dict['N'][k_N]["vary"],
                 "global":parm_dict['N'][k_N]['global']}
-        
+
         rules['ss2']={}
         for k_ss2 in parm_dict['ss2'].keys():
-            
+
             if parm_dict['ss2'][k_ss2]['thermal']['type']==False:
                 rules['ss2'][k_ss2]={"vary":parm_dict['ss2'][k_ss2]["vary"],
                     "global":parm_dict['ss2'][k_ss2]['global'],
@@ -481,7 +487,7 @@ class data_processing_minibatch:
             pars=self.fit_param_batch(batch_size,**parm_dict)
             paths=self.path_param_batch(feff_folder,fitpath_num,rules=rules,batch_size=batch_size)
         trans= feffit_transform(**fit_range_param)
-        
+
         # sa_check=[]
         # sa_check2=[]
         if batch_index*batch_size<=len(self.data) and batch_index<batch_num:
@@ -494,7 +500,7 @@ class data_processing_minibatch:
             report=feffit_report(out)
         if batch_index==batch_num:
             for i in range((batch_index-1)*batch_size,len(self.data)):
-                                
+
                 dset.append(feffit_dataset(data=self.data[i],pathlist=[paths[i-(batch_index-1)*batch_size]],transform=trans))
             true_batch_size=len(self.data)-batch_size*(batch_index-1)
             out=feffit(pars,dset,fix_unused_variables=False)
@@ -502,7 +508,7 @@ class data_processing_minibatch:
         # print(sa_check)
         # print(sa_check2)
         return dset,out,report,true_batch_size,paths
-        
+
 
      def run_fit_batch(self,param_dict:dict,
                        fit_range_param:dict,
@@ -517,8 +523,8 @@ class data_processing_minibatch:
         if batch_size is None:
             batch_size=self.batch_size
         else:
-            batch_size=batch_size  
-        if batch_num is None:  
+            batch_size=batch_size
+        if batch_num is None:
             batch_num=len(self.data)//batch_size
         elif batch_num!=None and batch_num<=len(self.data)//batch_size:
             batch_num=batch_num
@@ -564,7 +570,7 @@ class data_processing_minibatch:
                 reports.append(report)
                 batch_nums.append(batch_num)
         if write==True:
-            self.write_report_mini_batch(save_name,reports,batch_nums) 
+            self.write_report_mini_batch(save_name,reports,batch_nums)
         return dsets,outs,reports,paths
      def write_report_mini_batch(self,filename:str, report:list,batch_size:int):
         try:
@@ -589,7 +595,7 @@ class data_processing_minibatch:
             batch_num=batch_num
         if batch_size>len(self.data):
             raise ValueError("batch_size is larger than the data size")
-        
+
         reff=path.reff
         if isinstance(reff,float):
             reff=[reff]
@@ -612,13 +618,13 @@ class data_processing_minibatch:
                     else:
                         num_k = len([key for key in out[i].params.keys() if k2 in key])
                         for j in range(num_k):
-                            if k2 not in params.keys(): 
+                            if k2 not in params.keys():
                                  params[k2]={f'{k2}_{i*batch_size+j}':{'value':out[i].params[f'{k2}_{j}'].value,
                                                              'stderr':out[i].params[f'{k2}_{j}'].stderr}}
                             else:
                                  params[k2][f'{k2}_{i*batch_size+j}']={'value':out[i].params[f'{k2}_{j}'].value,
                                                              'stderr':out[i].params[f'{k2}_{j}'].stderr}
-        
+
         for i in range(num):
             k2=list(param_dict['delr'].keys())
             for k2i in range(len(k2)):
@@ -635,7 +641,7 @@ class data_processing_minibatch:
                         ele=k2[k2i].split('_')[1]
                         params[f'r_{ele}'].update({f'r_{ele}_{i}':{'value':params[f"delr_{ele}"][f'delr_{ele}_{i}']['value']+reff[k2i],
                                                                    'stderr':params[f'delr_{ele}'][f'delr_{ele}_{i}']['stderr']}})
-        return params  
+        return params
      def write_fitted_data(self,dset,filename:str,foldername:str,suffix:str)->None:
         data_k={}
         data_r={}
@@ -683,7 +689,7 @@ class data_processing_minibatch:
 
 
 
-                
+
      def get_chi_square_rfactor(self,report):
         evaluation=dict()
         evaluation['chi_square']=[]
@@ -698,9 +704,9 @@ class data_processing_minibatch:
                     evaluation['chi_square'].append(np.round(np.float32(match('\ +chi_square\ +=\ +(\d+.?\d+)',lines[i]).group(1)),6))
                 if match('\ +reduced chi_square\ +=\ +(\d+.?\d+)',lines[i]):
                     evaluation['reduced chi_square'].append(np.round(np.float32(match('\ +reduced chi_square\ +=\ +(\d+.?\d+)',lines[i]).group(1)),6))
-        return evaluation   
+        return evaluation
 
-            
+
      def clean_fit_param(self):
         self.fit_param_get={}
 
@@ -732,23 +738,22 @@ class data_processing_minibatch:
 #                             fitpath_num,fit_range_param,
 #                             min_batch=1,max_batch=100,
 #                             space=5):
-    
+
 #     batch_sizes=np.int32(np.linspace(min_batch,max_batch,num=(max_batch-min_batch+1)//space))
 #     evaluation=[]
-    
+
 #     for batch in tqdm(batch_sizes,total=len(batch_sizes)):
 #         exp_data=data_processing_multiOnerun(filename,datatype,read_range=batch)
 #         exp_data.process_data(data_dict)
 #         dset,out,report,paths=exp_data.run_fit(parm_dict,feff_folder,fitpath_num,
 #                     fit_range_param)
-#         lines=report.split('\n')           
+#         lines=report.split('\n')
 #         for i in range(len(lines)):
 #             if match('\ +r-factor\ +=\ +(\d+.?\d+)',lines[i]):
 #                     evaluation.append(np.float32(match('\ +r-factor\ +=\ +(\d+.?\d+)',lines[i]).group(1)))
 
 #     return evaluation,batch_sizes
 
-            
-            
-            
-           
+
+
+

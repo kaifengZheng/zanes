@@ -36,12 +36,14 @@ Installation
 
 Usage
 -----
-1. organize your data into following format
+organize your data into following format
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Athena project file
    * csv(set Energy at the first column, and all spectra list subsequently(interpolate to the same Energy grid)(with column name))
    * ProQEXAFS(a plain text, first column is the Energy and all spectra list subsequently(no column name))
    * other are under development(coming soon...)
-2. Data processing(back ground removal, flattening and plotting)
+Data processing(back ground removal, flattening and plotting)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * import data
 
      .. code-block:: python
@@ -81,7 +83,9 @@ Usage
           .. code-block:: python
 
              exp_data.process_data(data_param)
-  * fitting data
+Fitting data
+~~~~~~~~~~~~~
+
     Two parameter dictionaries are used in fitting process:
     - fitting parameters:
 

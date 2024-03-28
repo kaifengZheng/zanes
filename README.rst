@@ -91,13 +91,15 @@ Fitting data
 
     .. code-block:: JSON
 
-        data_param={'pre_start':-350,
-                    'pre_end':-70,
-                    'post_start':71,
-                    'post_end':1450,
-                    'kweight':2,'rbkg':1.5,
-                    'E0':11563.5,
-                    'krange':[2,15]}
+        param_dict={
+                    'SO2':{"SO2":{'initial':0.78,'vary':False,'global':False}},
+                    'dele':{'dele_Pt':{'initial':0.0,'vary':True,'global':False}},
+                    'ss2':{'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
+                                      'thermal':{'type':False,
+                                       'theta':{'initial':400,'vary':True,'global':True}}}},
+                     'N':{'N_Pt':{'initial':12.0,'vary':True,'global':False}},
+                     'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
+}
     - fitting range parameters
   
     .. code-block:: JSON

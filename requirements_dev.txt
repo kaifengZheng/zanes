@@ -11,9 +11,11 @@ twine
 Click
 pytest
 black
-cpython
-wolframclient
+
+xraylarch
 pandas
 numpy
 toml
 tqdm
+matplotlib
+scipy

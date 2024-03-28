@@ -416,23 +416,22 @@ class zanes_data_analysis:
                                     deltar=delr)
                                     )
         return paths
-     def feff_call(path:str,feff_inpname:str)->None:
+     def feff_call(self,path:str)->None:
         feff=feffrunner(folder=path,feffinp='feff.inp')
         feff.run()
      def feff_path(self,feff_folder:str)->pd.DataFrame:
         if not exists(join(feff_folder,'files.dat')):
             if exists(join(feff_folder,'feff.inp')):
-                self.feff_call(join(feff_folder,'feff.inp'))
+                self.feff_call(feff_folder)
             else:
                 raise ValueError('feff.inp is not in the folder')
-        else:
-            with open(join(feff_folder,'files.dat'),'r') as f:
-                lines=f.readlines()
-            num=0
-            for i in range(len(lines)):
-                if search('^(\s+[A-Za-z]+\d*){8}$',lines[i]):
-                    num=i
-                    break
+        with open(join(feff_folder,'files.dat'),'r') as f:
+            lines=f.readlines()
+        num=0
+        for i in range(len(lines)):
+            if search('^(\s+[A-Za-z]+\d*){8}$',lines[i]):
+                num=i
+                break
         return pd.read_csv(join(feff_folder,'files.dat'),sep=' +',skiprows=num+1,names=['file','sig2','amp ratio','deg','nlegs','r effective'])
      def feff_rules(self,**parm_dict):
         rules=dict()
@@ -711,18 +710,19 @@ class zanes_data_analysis:
         self.fit_param_get={}
 
      def plot_fitting_batch_results(self,batch_index,dset,d_range=[0,-1]):
-        for i in range(len(dset[batch_index][d_range[0]:d_range[1] ])):
+        batch_size=len(dset[batch_index])
+        for i in range(len(dset[batch_index][d_range[0]:d_range[1]])):
             mod=dset[batch_index][i].model
             dat=dset[batch_index][i].data
             kweight=dset[batch_index][i].transform.kweight
             data_chik=dat.chi*dat.k**kweight
             model_chik=mod.chi*mod.k**kweight
             fig,ax=plt.subplots(1,2)
-            ax[0].plot(dat.k,data_chik,color='cornflowerblue',linestyle='-',label=self.data[d_range[0]+i].label)
+            ax[0].plot(dat.k,data_chik,color='cornflowerblue',linestyle='-',label=self.data[batch_size*batch_index+d_range[0]+i].label)
             ax[0].plot(mod.k,model_chik,color='orange',linestyle='-',label='fit')
             ax[0].plot(dat.k,dat.kwin,color='lightcoral',linestyle='-',label='kwin')
             ax[0].legend(frameon=False)
-            ax[1].plot(dat.r,dat.chir_mag,color='cornflowerblue',linestyle='-',label=self.data[d_range[0]+i].label)
+            ax[1].plot(dat.r,dat.chir_mag,color='cornflowerblue',linestyle='-',label=self.data[batch_size*batch_index+d_range[0]+i].label)
             ax[1].plot(mod.r,mod.chir_mag,color='orange',linestyle='-',label='fit')
             ax[1].plot(mod.r,mod.rwin,color='lightcoral',linestyle='-',label='rwin')
             ax[0].set_xlim(0,20)

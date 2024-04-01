@@ -11,7 +11,7 @@ batch size: 1
    r-factor           = 0.01016068
    Akaike info crit   = 47.2919161
    Bayesian info crit = 49.2995550
- 
+
 [[Dataset]]
    unique_id          = 'd64erzk2'
    fit space          = 'r'
@@ -23,20 +23,20 @@ batch size: 1
    epsilon_k          = Array(mean=6.7164e-4, std=6.8599e-5)
    epsilon_r          = 0.0165101
    n_independent      = 12.206
- 
+
 [[Variables]]
    N_Pt_0         =  9.1787174 +/- 0.6764035   (init=  12.000000)
    SO2_0          =  0.7800000 (fixed)
    dele_Pt_0      = -3.4064620 +/- 0.5735600   (init=  0.0000000)
    delr_Pt_0      = -0.0342965 +/- 0.0031816   (init=  0.0000000)
    ss2_Pt_0       =  0.0063638 +/- 4.1395e-4   (init=  0.0030000)
- 
+
 [[Correlations]]    (unreported correlations are <  0.100)
    N_Pt_0, ss2_Pt_0     =  0.877
    dele_Pt_0, delr_Pt_0 =  0.765
    N_Pt_0, delr_Pt_0    =  0.111
    delr_Pt_0, ss2_Pt_0  =  0.111
- 
+
 [[Paths]]
  = Path 'pknpzcbc2m' = Pd K Edge
     feffdat file = test_data/feff/feff0001.dat, from feff run 'feff'
@@ -66,7 +66,7 @@ batch size: 1
    r-factor           = 0.00621401
    Akaike info crit   = 55.8600405
    Bayesian info crit = 57.8676794
- 
+
 [[Dataset]]
    unique_id          = 'd4lzp56y'
    fit space          = 'r'
@@ -78,20 +78,20 @@ batch size: 1
    epsilon_k          = Array(mean=5.3648e-4, std=4.0980e-4)
    epsilon_r          = 0.0131875
    n_independent      = 12.206
- 
+
 [[Variables]]
    N_Pt_0         =  11.547711 +/- 0.6846195   (init=  12.000000)
    SO2_0          =  0.7800000 (fixed)
    dele_Pt_0      = -2.2829073 +/- 0.4755165   (init=  0.0000000)
    delr_Pt_0      = -0.0307155 +/- 0.0024118   (init=  0.0000000)
    ss2_Pt_0       =  0.0054773 +/- 3.1035e-4   (init=  0.0030000)
- 
+
 [[Correlations]]    (unreported correlations are <  0.100)
    N_Pt_0, ss2_Pt_0     =  0.885
    dele_Pt_0, delr_Pt_0 =  0.771
    N_Pt_0, delr_Pt_0    =  0.114
    delr_Pt_0, ss2_Pt_0  =  0.113
- 
+
 [[Paths]]
  = Path 'pknpzcbc2m' = Pd K Edge
     feffdat file = test_data/feff/feff0001.dat, from feff run 'feff'
@@ -121,7 +121,7 @@ batch size: 1
    r-factor           = 0.00635157
    Akaike info crit   = 38.1137162
    Bayesian info crit = 40.1213550
- 
+
 [[Dataset]]
    unique_id          = 'doa6z4ml'
    fit space          = 'r'
@@ -133,20 +133,20 @@ batch size: 1
    epsilon_k          = Array(mean=5.7030e-4, std=7.3823e-5)
    epsilon_r          = 0.0140190
    n_independent      = 12.206
- 
+
 [[Variables]]
    N_Pt_0         =  8.7754716 +/- 0.4933538   (init=  12.000000)
    SO2_0          =  0.7800000 (fixed)
    dele_Pt_0      = -3.4219010 +/- 0.4129688   (init=  0.0000000)
    delr_Pt_0      =  0.0390779 +/- 0.0026461   (init=  0.0000000)
    ss2_Pt_0       =  0.0076080 +/- 3.4765e-4   (init=  0.0030000)
- 
+
 [[Correlations]]    (unreported correlations are <  0.100)
    N_Pt_0, ss2_Pt_0     =  0.868
    dele_Pt_0, delr_Pt_0 =  0.764
    N_Pt_0, delr_Pt_0    =  0.119
    delr_Pt_0, ss2_Pt_0  =  0.115
- 
+
 [[Paths]]
  = Path 'pknpzcbc2m' = Pd K Edge
     feffdat file = test_data/feff/feff0001.dat, from feff run 'feff'
@@ -162,4 +162,3 @@ batch size: 1
      sigma2 =  0.0076080 +/- 3.4765e-4  := 'ss2_Pt_0'
 
 =======================================================
-

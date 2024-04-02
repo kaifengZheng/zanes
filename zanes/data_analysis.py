@@ -367,7 +367,7 @@ class zanes_data_analysis:
                         dict_data[j].append(float(data_lines[j]))
             return pd.DataFrame(dict_data)
 
-    def read_data_raw(self, filename: str) -> pd.DataFrame:
+     def read_data_raw(self, filename: str) -> pd.DataFrame:
         with open(filename) as file1:
             data = file1.readlines()
         dict_data = dict()

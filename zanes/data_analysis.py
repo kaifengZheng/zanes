@@ -285,13 +285,13 @@ def find_nearest_idx(array, value):
 
 class zanes_data_analysis:
 
-     def __init__(self,data:None|list[Group]=None):
+    def __init__(self,data:None|list[Group]=None):
         if data is None:
             self.data=[]
         else:
             self.data=data
 
-     def read_datacollection(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
+    def read_datacollection(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
             if isinstance(read_range,int) and read_range is not None:
                 scan=0
             elif isinstance(read_range,list) and read_range!=[] and len(read_range)!=1:
@@ -350,7 +350,7 @@ class zanes_data_analysis:
                 if read_range is None:
                     for i in range(1,len(keys)):
                         self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-     def read_data_raw(self,filename:str)->pd.DataFrame:
+    def read_data_raw(self,filename:str)->pd.DataFrame:
             with open(filename) as file1:
                 data=file1.readlines()
             dict_data=dict()
@@ -367,7 +367,7 @@ class zanes_data_analysis:
                         dict_data[j].append(float(data_lines[j]))
             return pd.DataFrame(dict_data)
 
-     def read_data_raw(self, filename: str) -> pd.DataFrame:
+    def read_data_raw(self, filename: str) -> pd.DataFrame:
         with open(filename) as file1:
             data = file1.readlines()
         dict_data = dict()

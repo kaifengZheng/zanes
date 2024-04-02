@@ -737,6 +737,7 @@ class zanes_data_analysis:
             warn(
                 f"The batch_num exceed the maximum value of batch number, It changed to the maximum batch number {batch_num} automatically."
             )
+        self.batch_size = batch_size
         dsets, outs, reports, batch_nums = [], [], [], []
         # print(fitpath_num)
         if mpi == False:

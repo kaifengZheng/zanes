@@ -77,7 +77,7 @@ Data processing(back ground removal, flattening and plotting)
                post_end=data_param['post_end'],
                kweight=data_param['kweight'],rbkg=data_param['rbkg'],
                krange=data_param['krange'],plot=True)
-           
+
     - process all data
 
           .. code-block:: python
@@ -101,7 +101,7 @@ Fitting data
                      'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
 }
     - fitting range parameters
-  
+
     .. code-block:: JSON
 
         fit_range_param={'kmin':2,
@@ -113,7 +113,7 @@ Fitting data
                          'rmax':3.292}
 
     - running and write fitting files(mpi version is under development, use mpi=False for now)
- 
+
     .. code-block:: python
 
          surfix='_rbkg1'
@@ -126,7 +126,7 @@ Fitting data
          with open(output_fit, "w") as f:
             toml.dump(report_sort,f)
 
- 
+
 
 Features
 --------

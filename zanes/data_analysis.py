@@ -50,7 +50,7 @@ def data_processing(
         nnorm=nnorm,
         **kwargs,
     )
-    autobk(energy=group.energy, mu=group.mu, group=group, e0=e0, rbkg=rbkg)
+    autobk(energy=group.energy, mu=group.mu, group=group, e0=e0, rbkg=rbkg,kweight=2)
     xftf(
         k=group.k,
         chi=group.chi,

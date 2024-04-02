@@ -22,15 +22,15 @@ from re import search,match,split
 
 
 def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1.5,
-                  plot=False,kwin='hanning',krange=[2,8],nnorm=3,**kwargs):
+                  plot=False,kwin='hanning',dk=2,krange=[2,8],nnorm=3):
 
-    if 'e0' not in group.keys() and group.e0 is None and e0 is None:
+    if 'e0' not in group.keys() and e0 is None:
         find_e0(group)
         e0=group.e0
     interfunc=interp1d(group.energy,group.mu)
-    pre_edge(group,e0=e0,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm,**kwargs)
-    autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg)
-    xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
+    pre_edge(group,e0=e0,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm)
+    autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg,kweight=2)
+    xftf(k=group.k,chi=group.chi, dk=dk,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
     if plot:
         fig,ax=plt.subplots(2,2,figsize=(8,5))
         ax[0,0].plot(group.energy,group.mu,label=group.label)
@@ -65,7 +65,7 @@ def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_
 def data_analysis_xanes(group,pre_start=-30,pre_end=-10,post_start=20,post_end=900,e0=None,
                   plot=False,nnorm=3,energy_range=[],**kwargs):
 
-    if 'e0' not in group.keys() and group.e0 is None and e0 is None:
+    if 'e0' not in group.keys() and e0 is None:
         find_e0(group)
         e0=group.e0
     interfunc=interp1d(group.energy,group.mu)
@@ -201,30 +201,16 @@ def find_nearest_idx(array, value):
 
 class zanes_data_analysis:
 
-     def __init__(self,filename:str,datatype:str,batch_size:int|None=None,read_range:int|list[int]|np.ndarray|None=None):
-        self.data=[]
-        self.filename=filename
-        self.datatype=datatype
-        self.read_range=read_range
-        self.read_data(self.filename,self.datatype,read_range=self.read_range)
-        self.batch_size=batch_size
-        if batch_size==None:
-            batch_size=len(self.data)
-        elif type(read_range)==int and read_range!=None:
-            self.batch_num=read_range//batch_size
-        elif type(read_range)==list and read_range!=[] and len(read_range)!=1:
-            self.batch_num=(read_range[1]-read_range[0]+1)//batch_size
-            self.scan_begin=read_range[0]
-            self.scan_end=read_range[1]
-        elif read_range==None:
-            self.batch_num=len(self.data)//batch_size
+     def __init__(self,data:None|list[Group]=None):
+        if data is None:
+            self.data=[]
         else:
-            raise ValueError('read_range is not correct')
+            self.data=data
 
-     def read_data(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
+     def read_datacollection(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
             if isinstance(read_range,int) and read_range is not None:
                 scan=0
-            elif isinstance(read_range,(list,np.ndarray)) and read_range!=[] and len(read_range)!=1:
+            elif isinstance(read_range,list) and read_range!=[] and len(read_range)!=1:
                 scan_begin=read_range[0]
                 scan_end=read_range[1]
             elif read_range is None:
@@ -253,6 +239,7 @@ class zanes_data_analysis:
                 keys=data_get.keys()
                 if not isinstance(read_range,(list,np.ndarray)) and read_range is not None:
                     for i in range(1,len(keys)):
+                      
                         self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
                         scan+=1
                         if scan==read_range:
@@ -268,6 +255,7 @@ class zanes_data_analysis:
                 keys=data_get.keys()
                 if not isinstance(read_range,(list,np.ndarray)) and read_range is not None:
                     for i in range(1,len(keys)):
+                        
                         self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
                         scan+=1
                         if scan==read_range:
@@ -531,7 +519,7 @@ class zanes_data_analysis:
                        batch_size:int|None=None,
                        batch_num:int|None=None):
         if batch_size is None:
-            batch_size=self.batch_size
+            batch_size=len(self.data)
         else:
             batch_size=batch_size
         if batch_num is None:
@@ -541,6 +529,7 @@ class zanes_data_analysis:
         else:
             batch_num=len(self.data)//batch_size
             warn(f"The batch_num exceed the maximum value of batch number, It changed to the maximum batch number {batch_num} automatically.")
+                
         dsets,outs,reports,batch_nums=[],[],[],[]
         # print(fitpath_num)
         if mpi==False:

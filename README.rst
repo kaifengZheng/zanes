@@ -150,6 +150,15 @@ Fitting data
          with open(output_fit, "w") as f:
              toml.dump(report_sort,f)
 
+codes run on linux system(support python >3.10)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is an option to run the fitting on a Linux system by bash command, the codes in  **codes_for_linux** folder. The whole bash script for running the fitting is in **run.slurm**.
+To utilize this code, data should be stored in the **input** folder, and either feff input file or feff results should stored in feff folder. There is a output folder created in the directory.
+
+.. code-block:: bash
+    
+    python fitting.py --input "${files[0]}" -o output/ -dt ProQEXAFS -bs -1 -os _rbkg1_ss
 
 
 

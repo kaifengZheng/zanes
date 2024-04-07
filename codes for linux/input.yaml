@@ -1,0 +1,51 @@
+norm_param:
+  pre_start: -350
+  pre_end: -70
+  post_start: 71
+  post_end: 1450
+  kweight: 2
+  rbkg: 1
+  e0: 11563.5
+  krange:
+  - 2
+  - 15
+fitting_range:
+  kmin: 2
+  kmax: 15
+  kw: 2
+  dk: 2
+  window: hanning
+  rmin: 1.646
+  rmax: 3.292
+fitting_param:
+  SO2:
+    SO2:
+      initial: 0.84
+      vary: false
+      global: true
+  dele:
+    dele_Pt:
+      initial: 0.0
+      vary: true
+      global: true
+  ss2:
+    ss2_Pt:
+      initial: 0.003
+      vary: true
+      global: false
+      thermal:
+        type: false
+        theta:
+          initial: 400
+          vary: true
+          global: true
+  N:
+    N_Pt:
+      initial: 12.0
+      vary: true
+      global: true
+  delr:
+    delr_Pt:
+      initial: 0.0
+      vary: true
+      global: false

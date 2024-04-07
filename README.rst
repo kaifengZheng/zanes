@@ -48,8 +48,14 @@ Data processing(back ground removal, flattening and plotting)
 
      .. code-block:: python
 
-        from zanes.data_analysis import zanes_data_analysis as zanes_data_analysis
-        from zanes.data_analysis import data_processing as dp
+        import numpy as np
+        import pandas as pd
+        from larch import Group
+        from Zanes.zanes.data_analysis import data_processing as dp
+        from Zanes.zanes.data_analysis import zanes_data_analysis as zda
+        from glob import glob
+        import toml
+        import os
         filename='test_data/pd.prj'
         exp_data=zda(filename,datatype='Athena',batch_size=None,read_range=None)
 
@@ -60,12 +66,12 @@ Data processing(back ground removal, flattening and plotting)
      .. code-block:: JSON
 
         data_param={'pre_start':-350,
-                    'pre_end':-70,
-                    'post_start':71,
-                    'post_end':1450,
-                    'kweight':2,'rbkg':1.5,
-                    'E0':11563.5,
-                    'krange':[2,15]}
+               'pre_end':-70,
+               'post_start':71,
+               'post_end':1450,
+               'kweight':2,'rbkg':1,
+               'E0':11563.5,
+               'krange':[2,15]}
 
     - process one data with plotting
 
@@ -91,15 +97,15 @@ Fitting data
 
     .. code-block:: JSON
 
-        param_dict={
-                    'SO2':{"SO2":{'initial':0.78,'vary':False,'global':False}},
-                    'dele':{'dele_Pt':{'initial':0.0,'vary':True,'global':False}},
-                    'ss2':{'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
-                                      'thermal':{'type':False,
-                                       'theta':{'initial':400,'vary':True,'global':True}}}},
-                     'N':{'N_Pt':{'initial':12.0,'vary':True,'global':False}},
-                     'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
-}
+       param_dict={
+            'SO2':{"SO2":{'initial':0.84,'vary':False,'global':True}},
+            'dele':{'dele_Pt':{'initial':0.0,'vary':True,'global':True}},
+            'ss2':{'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
+                    'thermal':{'type':False,
+                     'theta':{'initial':400,'vary':True,'global':True}}}},
+            'N':{'N_Pt':{'initial':12.0,'vary':True,'global':True}},
+            'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
+       }
     - fitting range parameters
 
     .. code-block:: JSON
@@ -115,16 +121,22 @@ Fitting data
     - running and write fitting files(mpi version is under development, use mpi=False for now)
 
     .. code-block:: python
-
-         surfix='_rbkg1'
-         foldername='results'
-         save_path=join(foldername,'pd'+surfix+'.txt')
-         dset,out,report,path=exp_data.run_fit_batch(param_dict=param_dict,fit_range_param=fit_range_param,fitpath_num=[0],feff_folder='feff',save_name=save_path,mpi=False,core=10,write=True)
-         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
-         exp_data.write_fitted_data(dset,'Pd',foldername,suffix='_rbkg1')
-         output_fit = join(foldername,file_name[:-4]+'_rbkg1.toml')
+         output_path+'results'
+         surfix='_rbkg1' #surfix can be used to describe the special conditions to run the fitting. It is useful when one wants to run multiple fittings.
+         file_name=basename(file) # file is the path pointing direct to the datatable to process
+         foldername=join('results',file_name[:-4]+surfix)
+         if not os.path.exists(foldername):
+            mkdir(foldername)
+         exp_data=zda()
+         exp_data.read_datacollection(file,datatype='ProQEXAFS')
+         exp_data.process_data(data_param)
+         dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[0],'feff',save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100)
+         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])   
+         exp_data.write_fitted_data(dset,file,foldername,suffix='_rbkg1_CN_ss')
+         output_fit = join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')
          with open(output_fit, "w") as f:
-            toml.dump(report_sort,f)
+             toml.dump(report_sort,f)
+
 
 
 

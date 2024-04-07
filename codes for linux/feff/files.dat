@@ -1,0 +1,42 @@
+ Structure from AMCSD, AMS_ID: 11157            Feff8L (EXAFS)       0.1
+ Mineral Name: Platinum
+ Journal: Crystal Structures 1, pp. 7-83 (1963)
+ Authors: Wyckoff R W G
+ Title1:  Second edition. Interscience Publishers, New York, New York
+ Title2:  Cubic closest packed, ccp, structure
+ Formula:    Pt
+ SpaceGroup: Fm-3m
+ # sites:    1
+ POT  Non-SCF, core-hole, AFOLP (folp(0)= 1.150)
+ Abs   Z=78 Rmt= 1.463 Rnm= 1.499 L3 shell
+ Pot 1 Z=78 Rmt= 1.477 Rnm= 1.515
+ Gam_ch=5.171E+00 H-L exch
+ Mu=-2.659E-01 kf=2.036E+00 Vint=-1.605E+01 Rs_int= 1.782
+ PATH  Rmax= 7.000,  Keep_limit= 0.00, Heap_limit 0.00  Pwcrit= 2.50%
+ -----------------------------------------------------------------------
+    file        sig2   amp ratio    deg    nlegs  r effective
+ feff0001.dat 0.00000   100.000    12.000     2   2.7741
+ feff0002.dat 0.00000    25.110     6.000     2   3.9231
+ feff0003.dat 0.00000    14.850    48.000     3   4.1611
+ feff0004.dat 0.00000     5.816    48.000     3   4.7356
+ feff0005.dat 0.00000    60.000    24.000     2   4.8048
+ feff0006.dat 0.00000    10.350    48.000     3   5.1764
+ feff0007.dat 0.00000    32.150    96.000     3   5.1764
+ feff0008.dat 0.00000    19.970    12.000     2   5.5481
+ feff0009.dat 0.00000     8.197    12.000     3   5.5481
+ feff0010.dat 0.00000    86.270    24.000     3   5.5481
+ feff0011.dat 0.00000    14.990    12.000     4   5.5481
+ feff0012.dat 0.00000     3.448    12.000     4   5.5481
+ feff0013.dat 0.00000     4.825    48.000     4   5.5481
+ feff0014.dat 0.00000    97.240    12.000     4   5.5481
+ feff0015.dat 0.00000     5.060    48.000     4   5.5481
+ feff0016.dat 0.00000     9.789    48.000     4   5.5481
+ feff0018.dat 0.00000     3.047    48.000     3   5.7510
+ feff0019.dat 0.00000    28.510    24.000     2   6.2030
+ feff0020.dat 0.00000     4.537    48.000     3   6.4501
+ feff0021.dat 0.00000     9.560    48.000     3   6.4501
+ feff0022.dat 0.00000    11.380    48.000     3   6.4501
+ feff0023.dat 0.00000     4.037    96.000     3   6.5635
+ feff0024.dat 0.00000     8.960    96.000     4   6.5635
+ feff0025.dat 0.00000     5.801    96.000     4   6.5635
+ feff0028.dat 0.00000     7.121     8.000     2   6.7950

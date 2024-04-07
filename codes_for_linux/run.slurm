@@ -10,6 +10,7 @@
 module load slurm
 module load  python/3.9.7
 module load 10.0.0
+git clone https://github.com/kaifengZheng/zanes.git
 
 #module load intel/oneAPI/2021.4
 

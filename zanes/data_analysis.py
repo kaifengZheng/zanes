@@ -19,9 +19,31 @@ from tqdm import tqdm
 from warnings import warn
 from re import search, match, split
 
-def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1,
-                  plot=False,kwin='hanning',dk=2,krange=[2,8],nnorm=3):
+def data_processing(group, e0=None, pre_start=-30, pre_end=-10, post_start=20, post_end=900, kweight=2, rbkg=1,
+                  plot=False, kwin='hanning', dk=2, krange=[2, 8], nnorm=3):
+    """
+    Process the data for X-ray absorption spectroscopy analysis.
 
+    Args:
+    - group: dictionary containing energy and mu data
+    - e0: edge energy
+    - pre_start: start of the pre-edge region
+    - pre_end: end of the pre-edge region
+    - post_start: start of the post-edge region
+    - post_end: end of the post-edge region
+    - kweight: k-weight for the Fourier transform
+    - rbkg: rbkg for autobk function to remove background
+    - plot: boolean flag to indicate whether to display plots
+    - kwin: window function for Fourier transform
+    - dk: k-space step size
+    - krange: range of k values for Fourier transform
+    - nnorm: number of normalization functions
+
+    Returns:
+    - Processed X-ray absorption spectroscopy data
+
+    """
+    
     if 'e0' not in group.keys() and e0 is None:
         find_e0(group)
         e0=group.e0
@@ -33,10 +55,12 @@ def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_
         k_inten_unit=-kweight
         r_inten_unit=-kweight-1
         fig, ax = plt.subplots(2, 2, figsize=(8, 5))
+        # Plot data and calculated values
         ax[0, 0].plot(group.energy, group.mu, label=group.label)
         ax[0, 0].plot(group.energy, group.bkg)
         ax[0, 0].plot(group.energy, group.pre_edge)
         ax[0, 0].plot(group.energy, group.post_edge)
+        # Add vertical lines for edge and normalization regions
         ax[0, 0].vlines(
             pre_start + group.e0, 0, np.max(group.mu), "b", alpha=0.3, linestyles="--"
         )
@@ -85,11 +109,29 @@ def data_analysis_xanes(
     energy_range=[],
     **kwargs,
 ):
+    """
+    Perform XANES data analysis on the given group.
+
+    Args:
+    - group: XANES data group
+    - pre_start: start of pre-edge region
+    - pre_end: end of pre-edge region
+    - post_start: start of post-edge region
+    - post_end: end of post-edge region
+    - e0: edge jump energy
+    - plot: flag to enable/disable plotting
+    - nnorm: number of normalization points
+    - energy_range: energy range for plotting
+    - **kwargs: additional keyword arguments
+
+    Returns:
+    - None
+    """
 
     if "e0" not in group.keys() and group.e0 is None and e0 is None:
-        find_e0(group)
+        find_e0(group)  # Find the edge jump energy if not given
         e0 = group.e0
-    interfunc = interp1d(group.energy, group.mu)
+    interfunc = interp1d(group.energy, group.mu)  # Interpolate mu vs energy
     pre_edge(
         group,
         e0=e0,
@@ -99,59 +141,61 @@ def data_analysis_xanes(
         norm2=post_end,
         nnorm=nnorm,
         **kwargs,
-    )
-    # autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg,nknots=nknots)
-    # xftf(k=group.k,chi=group.chi, dk=2,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
+    )  # Calculate pre-edge features
     if plot:
-        fig, ax = plt.subplots(1, 2, figsize=(8, 5))
-        ax[0].plot(group.energy, group.mu, label=group.label)
-        # ax[0].plot(group.energy,group.bkg)
-        ax[0].plot(group.energy, group.pre_edge)
-        ax[0].plot(group.energy, group.post_edge)
+        fig, ax = plt.subplots(1, 2, figsize=(8, 5))  # Create a figure for plotting
+        ax[0].plot(group.energy, group.mu, label=group.label)  # Plot mu vs energy
+        ax[0].plot(group.energy, group.pre_edge)  # Plot pre-edge
+        ax[0].plot(group.energy, group.post_edge)  # Plot post-edge
+        # Add vertical lines for specific energy points
         ax[0].vlines(
             pre_start + group.e0, 0, np.max(group.mu), "b", alpha=0.3, linestyles="--"
         )
+        # Add more vertical lines for specific energy points
         ax[0].vlines(
             pre_end + group.e0, 0, np.max(group.mu), "b", alpha=0.3, linestyles="--"
         )
-        ax[0].vlines(
-            post_start + group.e0, 0, np.max(group.mu), "b", alpha=0.3, linestyles="--"
-        )
-        ax[0].vlines(
-            post_end + group.e0, 0, np.max(group.mu), "b", alpha=0.3, linestyles="--"
-        )
-        ax[0].scatter([group.e0], [float(interfunc(group.e0))], c="r")
-        ax[0].set_xlabel("Energy(eV)")
-        ax[0].set_ylabel("$\mu(E)$")
-        ax[1].plot(group.energy, group.flat, label="flat")
-        ax[1].set_xlabel("Energy(eV)")
-        ax[1].set_ylabel("$\mu(E)$")
-        ax[0].legend(frameon=False)
-        ax[1].legend(frameon=False)
-        ax[0].set_xlim([energy_range[0], energy_range[1]])
-        ax[1].set_xlim([energy_range[0], energy_range[1]])
-        plt.tight_layout()
-        print(f"E0={group.e0}")
-
+        ax[0].scatter([group.e0], [float(interfunc(group.e0))], c="r")  # Scatter plot
+        ax[0].set_xlabel("Energy(eV)")  # Set x-axis label
+        ax[0].set_ylabel("$\mu(E)$")  # Set y-axis label
+        ax[1].plot(group.energy, group.flat, label="flat")  # Plot flat energy
+        ax[1].set_xlabel("Energy(eV)")  # Set x-axis label
+        ax[1].set_ylabel("$\mu(E)$")  # Set y-axis label
+        ax[0].legend(frameon=False)  # Add legend without frame
+        ax[1].legend(frameon=False)  # Add legend without frame
+        ax[0].set_xlim([energy_range[0], energy_range[1]])  # Set x-axis limits
+        ax[1].set_xlim([energy_range[0], energy_range[1]])  # Set x-axis limits
+        plt.tight_layout()  # Adjust subplot parameters to give specified padding
+        print(f"E0={group.e0}")  # Print edge jump energy
 
 def wavelet_transform(group, kweight=2, plot=False):
     """
-    The group should contains chi and k
-    Note: Cauchy_wavelet acts on the k^kweight*chi*win, not the k^weight*chi
+    Perform wavelet transform on the input group.
+
+    Args:
+    - group: input group containing chi and k
+    - kweight: exponent for k in the transformation
+    - plot: boolean flag to indicate whether to plot the results
+
+    Note: Cauchy_wavelet acts on the k^kweight*chi*win instead of the k^weight*chi
     """
 
+    # Apply cauchy_wavelet transformation to the input group
     cauchy_wavelet(
         group.k, group.k**kweight * group.chi * group.kwin, group=group, kweight=0
     )
-    if plot == True:
+
+    # Generate plot if plot flag is set to True
+    if plot:
         fig, ax = plt.subplots(
             2,
             2,
             figsize=(8, 8),
             gridspec_kw={"width_ratios": [1, 4], "height_ratios": [4, 1]},
         )
-        # imopts = {'x': spectra_UF4.k, 'y': spectra_UF4.wcauchy_r}
         X, Y = np.meshgrid(group.wcauchy_r, group.k)
+
+        # Create contour plot for the wavelet transform
         contour = ax[0, 1].contourf(
             X,
             Y,
@@ -160,10 +204,12 @@ def wavelet_transform(group, kweight=2, plot=False):
             levels=100,
             vmax=group.wcauchy_mag.max(),
             vmin=group.wcauchy_mag.min(),
-        )  # ,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+        )
+
+        # Set labels and titles for the plot
         scale_win = np.max(group.k**kweight * group.chi * group.kwin) * 1.5
-        k_inten_unit=-kweight
-        r_inten_unit=-kweight-1
+        k_inten_unit = -kweight
+        r_inten_unit = -kweight - 1
         ax[0, 0].set_ylabel("$k(\AA^{-1})$")
         ax[0, 0].set_xlabel(f"$k^{kweight}\chi(\AA^{k_inten_unit})$")
         ax[0, 0].invert_xaxis()
@@ -177,13 +223,21 @@ def wavelet_transform(group, kweight=2, plot=False):
         ax[0, 0].plot(group.kwin * scale_win, group.k, "r")
         ax[0, 0].sharey(ax[0, 1])
         ax[1, 0].remove()
+
+        # Display the plot
         plt.show()
 
 
 def plot_multi_spectrum(groupset, krange=[2, 12]):
+    # Create subplots with 2 rows and 2 columns
     fig, ax = plt.subplots(2, 2, figsize=(8, 5))
+    
+    # Iterate over each group in the groupset
     for group in groupset:
+        # Interpolate the data
         interfunc = interp1d(group.energy, group.mu)
+        
+        # Plot various spectra and related data on the first subplot
         ax[0, 0].plot(group.energy, group.mu, label=group.label)
         ax[0, 0].plot(group.energy, group.bkg)
         ax[0, 0].plot(group.energy, group.pre_edge)
@@ -191,11 +245,13 @@ def plot_multi_spectrum(groupset, krange=[2, 12]):
         ax[0, 0].scatter([group.e0], [float(interfunc(group.e0))], c="r")
         ax[0, 0].set_xlabel("Energy(eV)")
         ax[0, 0].set_ylabel("$\mu(E)$")
+        
+        # Plot the flat spectrum on the second subplot
         ax[0, 1].plot(group.energy, group.flat, label="flat")
         ax[0, 1].set_xlabel("Energy(eV)")
         ax[0, 1].set_ylabel("$\mu(E)$")
-        ax[0, 0].legend(frameon=False)
-        ax[0, 1].legend(frameon=False)
+        
+        # Plot chi(k) and related data on the third subplot
         chi_k = group.k**group.kweight * group.chi
         ax[1, 0].plot(group.k, chi_k, label="chi")
         ax[1, 0].plot(group.k, group.kwin * np.max(chi_k) * 1.05, label="kwin")
@@ -203,14 +259,22 @@ def plot_multi_spectrum(groupset, krange=[2, 12]):
         ax[1, 0].set_ylabel(f"$k^{group.kweight}$ $\chi(\AA^-{group.kweight})$")
         ax[1, 0].set_xlim(0, krange[1] + 2)
         ax[1, 0].set_ylim(-np.max(chi_k) * 1.1, np.max(chi_k) * 1.1)
+        
+        # Plot chir_mag on the fourth subplot
         ax[1, 1].plot(group.r, group.chir_mag, label="chir_mag")
         ax[1, 1].set_xlabel("r(A)")
         ax[1, 1].set_ylabel("$|\chi(R)|$")
         ax[1, 1].set_xlim([0, 6])
+    
+    # Adjust the layout to prevent overlapping
     plt.tight_layout()
 
 
 def BF_analysis(group, kweight=3, rrange=[], krange=[]):
+    # Perform Back Fourier Analysis on the input group data
+    # with optional kweight, rrange, and krange parameters
+
+    # Perform Fourier Transform
     xftr(
         r=group.r,
         chir=group.chir,
@@ -221,8 +285,11 @@ def BF_analysis(group, kweight=3, rrange=[], krange=[]):
         window="hanning",
         kstep=group.k[2] - group.k[1],
     )
-    # chiq=interp1d(group.q,group.chiq)(group.k)
+
+    # Create a deep copy of the input group
     BF_group = deepcopy(group)
+
+    # Perform Inverse Fourier Transform
     xftf(
         k=BF_group.q,
         chi=BF_group.chiq,
@@ -234,8 +301,11 @@ def BF_analysis(group, kweight=3, rrange=[], krange=[]):
         kstep=group.k[2] - group.k[1],
         window="hanning",
     )
-    # # transform again
+
+    # Create another deep copy of the transformed BF group
     BF_group_2 = deepcopy(BF_group)
+
+    # Perform Fourier Transform again
     xftr(
         r=BF_group_2.r,
         chir=BF_group_2.chir,
@@ -247,10 +317,8 @@ def BF_analysis(group, kweight=3, rrange=[], krange=[]):
         kstep=group.k[2] - group.k[1],
         window="hanning",
     )
-    # chiq2=interp1d(BF_group.q,BF_group.chiq)(BF_group.k)
-    # BF_group2=Group(k=BF_group.k,chi=chiq)
-    # xftf(k=BF_group2.k,chi=BF_group2.chi, dk=2,group=BF_group2,kweight=0,kmin=krange[0],kmax=krange[1],window='hanning')
 
+    # Plot the results in a 2x1 grid of subplots
     fig, ax = plt.subplots(2, 1, figsize=(8, 5))
     ax[0].plot(group.k, group.k**kweight * group.chi, color="b", label="chi")
     ax[0].plot(group.q, group.chiq, color="r", label="Back Fourier Transform")
@@ -265,7 +333,7 @@ def BF_analysis(group, kweight=3, rrange=[], krange=[]):
     ax[1].plot(BF_group.r, BF_group.chir_mag, color="r", label="Back Fourier Transform")
     ax[1].legend(frameon=False)
     ax[1].set_xlabel("r(A)")
-    ax[1].set_ylabel("$|\chi(R)|$")
+    ax[1].set_ylabel("$|\chi(R)|")
 
 
 def deglitch_Sfilter(E, mu, act_range=[], window_length=10, polyorder=3):

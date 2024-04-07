@@ -41,7 +41,7 @@ organize your data into following format
    * Athena project file
    * csv(set Energy at the first column, and all spectra list subsequently(interpolate to the same Energy grid)(with column name))
    * ProQEXAFS(a plain text, first column is the Energy and all spectra list subsequently(no column name))
-   * other are under development(coming soon...)
+   * others are under development(coming soon...)
 Data processing(back ground removal, flattening and plotting)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * import data

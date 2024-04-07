@@ -77,12 +77,24 @@ Data processing(back ground removal, flattening and plotting)
 
           .. code-block:: python
 
-              dp(exp_data.data[1],pre_start=data_param['pre_start'],
+              dp(exp_data.data[0],pre_start=data_param['pre_start'],
                       pre_end=data_param['pre_end'],
                post_start=data_param['post_start'],
                post_end=data_param['post_end'],
                kweight=data_param['kweight'],rbkg=data_param['rbkg'],
                krange=data_param['krange'],plot=True)
+
+          .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/data_analysis.png
+    - wavelet transform
+
+          .. code-block:: python
+
+              from Zanes.zanes.data_analysis import wavelet_transform
+              wavelet_transform(exp_data.data[0],plot=True)
+
+          .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/wavelet_transform.png
+              
+   
 
     - process all data
 

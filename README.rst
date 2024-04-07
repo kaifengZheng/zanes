@@ -121,7 +121,8 @@ Fitting data
     - running and write fitting files(mpi version is under development, use mpi=False for now)
 
     .. code-block:: python
-         output_path+'results'
+
+         output_path='results'
          surfix='_rbkg1' #surfix can be used to describe the special conditions to run the fitting. It is useful when one wants to run multiple fittings.
          file_name=basename(file) # file is the path pointing direct to the datatable to process
          foldername=join('results',file_name[:-4]+surfix)

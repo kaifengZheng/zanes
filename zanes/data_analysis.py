@@ -19,7 +19,7 @@ from tqdm import tqdm
 from warnings import warn
 from re import search, match, split
 
-def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1.5,
+def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_end=900,kweight=2,rbkg=1,
                   plot=False,kwin='hanning',dk=2,krange=[2,8],nnorm=3):
 
     if 'e0' not in group.keys() and e0 is None:
@@ -30,6 +30,8 @@ def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_
     autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg,kweight=2)
     xftf(k=group.k,chi=group.chi, dk=dk,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
     if plot:
+        k_inten_unit=-kweight
+        r_inten_unit=-kweight-1
         fig, ax = plt.subplots(2, 2, figsize=(8, 5))
         ax[0, 0].plot(group.energy, group.mu, label=group.label)
         ax[0, 0].plot(group.energy, group.bkg)
@@ -59,15 +61,16 @@ def data_processing(group,e0=None, pre_start=-30,pre_end=-10,post_start=20,post_
         ax[1, 0].plot(group.k, chi_k, label="chi")
         ax[1, 0].plot(group.k, group.kwin * np.max(chi_k) * 1.05, label="kwin")
         ax[1, 0].set_xlabel("k(A$^{-1}$)")
-        ax[1, 0].set_ylabel(f"$k^{kweight}$ $\chi(\AA^-{kweight})$")
+        ax[1, 0].set_ylabel(f"$k^{kweight}$ $\chi(\AA^{k_inten_unit})$")
         ax[1, 0].set_xlim(0, krange[1] + 2)
         ax[1, 0].set_ylim(-np.max(chi_k) * 1.1, np.max(chi_k) * 1.1)
         ax[1, 1].plot(group.r, group.chir_mag, label="chir_mag")
         ax[1, 1].set_xlabel("r(A)")
-        ax[1, 1].set_ylabel("$|\chi(R)|$")
+        ax[1, 1].set_ylabel(f"$|\chi(R)|$ $(\AA^{r_inten_unit})$")
         ax[1, 1].set_xlim([0, 6])
         plt.tight_layout()
         print(f"E0={group.e0}")
+
 
 
 def data_analysis_xanes(
@@ -159,11 +162,14 @@ def wavelet_transform(group, kweight=2, plot=False):
             vmin=group.wcauchy_mag.min(),
         )  # ,vmin=a0bs(coef).min(),vmax=abs(coef).max())
         scale_win = np.max(group.k**kweight * group.chi * group.kwin) * 1.5
+        k_inten_unit=-kweight
+        r_inten_unit=-kweight-1
         ax[0, 0].set_ylabel("$k(\AA^{-1})$")
-        ax[0, 0].set_xlabel("$k^3\chi(\AA^{-3})$")
+        ax[0, 0].set_xlabel(f"$k^{kweight}\chi(\AA^{k_inten_unit})$")
         ax[0, 0].invert_xaxis()
         ax[1, 1].set_xlabel("$R(\AA)$")
-        ax[0, 1].set_title("Cauchy Wavelet Transform for UF4")
+        ax[1, 1].set_ylabel(f"$|\chi(R)|$ $(\AA^{r_inten_unit})$")
+        ax[0, 1].set_title(f"Cauchy Wavelet Transform for set {group.label}")
         ax[0, 1].set_xlim([1, 5])
         ax[1, 1].plot(group.r, group.chir_mag, label="FFT")
         ax[1, 1].sharex(ax[0, 1])

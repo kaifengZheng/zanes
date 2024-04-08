@@ -224,4 +224,3 @@ _atom_site_fract_x
 _atom_site_fract_y
 _atom_site_fract_z
 Pt   0.0  0.0  0.0
-

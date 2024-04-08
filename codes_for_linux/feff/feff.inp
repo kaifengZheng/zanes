@@ -13,7 +13,7 @@ TITLE # sites:    1
 *     selected as absorber="Pt", absorber_site=1
 * index   X        Y        Z      species
 *   1   0.000000 0.000000 0.000000  Pt   <- absorber
-* 
+*
 
 
 EDGE    L3

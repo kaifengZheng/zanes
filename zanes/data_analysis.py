@@ -19,8 +19,22 @@ from tqdm import tqdm
 from warnings import warn
 from re import search, match, split
 
-def data_processing(group, e0=None, pre_start=-30, pre_end=-10, post_start=20, post_end=900, kweight=2, rbkg=1,
-                  plot=False, kwin='hanning', dk=2, krange=[2, 8], nnorm=3):
+
+def data_processing(
+    group,
+    e0=None,
+    pre_start=-30,
+    pre_end=-10,
+    post_start=20,
+    post_end=900,
+    kweight=2,
+    rbkg=1,
+    plot=False,
+    kwin="hanning",
+    dk=2,
+    krange=[2, 8],
+    nnorm=3,
+):
     """
     Process the data for X-ray absorption spectroscopy analysis.
 
@@ -43,17 +57,35 @@ def data_processing(group, e0=None, pre_start=-30, pre_end=-10, post_start=20, p
     - Processed X-ray absorption spectroscopy data
 
     """
-    
-    if 'e0' not in group.keys() and e0 is None:
+
+    if "e0" not in group.keys() and e0 is None:
         find_e0(group)
-        e0=group.e0
-    interfunc=interp1d(group.energy,group.mu)
-    pre_edge(group,e0=e0,pre1=pre_start,pre2=pre_end,norm1=post_start,norm2=post_end,nnorm=nnorm)
-    autobk(energy=group.energy,mu=group.mu,group=group,e0=e0,rbkg=rbkg,kweight=2)
-    xftf(k=group.k,chi=group.chi, dk=dk,kweight=kweight,group=group,kmin=krange[0],kmax=krange[1],kstep=group.k[2]-group.k[1],window=kwin)
+        e0 = group.e0
+    interfunc = interp1d(group.energy, group.mu)
+    pre_edge(
+        group,
+        e0=e0,
+        pre1=pre_start,
+        pre2=pre_end,
+        norm1=post_start,
+        norm2=post_end,
+        nnorm=nnorm,
+    )
+    autobk(energy=group.energy, mu=group.mu, group=group, e0=e0, rbkg=rbkg, kweight=2)
+    xftf(
+        k=group.k,
+        chi=group.chi,
+        dk=dk,
+        kweight=kweight,
+        group=group,
+        kmin=krange[0],
+        kmax=krange[1],
+        kstep=group.k[2] - group.k[1],
+        window=kwin,
+    )
     if plot:
-        k_inten_unit=-kweight
-        r_inten_unit=-kweight-1
+        k_inten_unit = -kweight
+        r_inten_unit = -kweight - 1
         fig, ax = plt.subplots(2, 2, figsize=(8, 5))
         # Plot data and calculated values
         ax[0, 0].plot(group.energy, group.mu, label=group.label)
@@ -94,7 +126,6 @@ def data_processing(group, e0=None, pre_start=-30, pre_end=-10, post_start=20, p
         ax[1, 1].set_xlim([0, 6])
         plt.tight_layout()
         print(f"E0={group.e0}")
-
 
 
 def data_analysis_xanes(
@@ -168,6 +199,7 @@ def data_analysis_xanes(
         plt.tight_layout()  # Adjust subplot parameters to give specified padding
         print(f"E0={group.e0}")  # Print edge jump energy
 
+
 def wavelet_transform(group, kweight=2, plot=False):
     """
     Perform wavelet transform on the input group.
@@ -231,12 +263,12 @@ def wavelet_transform(group, kweight=2, plot=False):
 def plot_multi_spectrum(groupset, krange=[2, 12]):
     # Create subplots with 2 rows and 2 columns
     fig, ax = plt.subplots(2, 2, figsize=(8, 5))
-    
+
     # Iterate over each group in the groupset
     for group in groupset:
         # Interpolate the data
         interfunc = interp1d(group.energy, group.mu)
-        
+
         # Plot various spectra and related data on the first subplot
         ax[0, 0].plot(group.energy, group.mu, label=group.label)
         ax[0, 0].plot(group.energy, group.bkg)
@@ -245,12 +277,12 @@ def plot_multi_spectrum(groupset, krange=[2, 12]):
         ax[0, 0].scatter([group.e0], [float(interfunc(group.e0))], c="r")
         ax[0, 0].set_xlabel("Energy(eV)")
         ax[0, 0].set_ylabel("$\mu(E)$")
-        
+
         # Plot the flat spectrum on the second subplot
         ax[0, 1].plot(group.energy, group.flat, label="flat")
         ax[0, 1].set_xlabel("Energy(eV)")
         ax[0, 1].set_ylabel("$\mu(E)$")
-        
+
         # Plot chi(k) and related data on the third subplot
         chi_k = group.k**group.kweight * group.chi
         ax[1, 0].plot(group.k, chi_k, label="chi")
@@ -259,13 +291,13 @@ def plot_multi_spectrum(groupset, krange=[2, 12]):
         ax[1, 0].set_ylabel(f"$k^{group.kweight}$ $\chi(\AA^-{group.kweight})$")
         ax[1, 0].set_xlim(0, krange[1] + 2)
         ax[1, 0].set_ylim(-np.max(chi_k) * 1.1, np.max(chi_k) * 1.1)
-        
+
         # Plot chir_mag on the fourth subplot
         ax[1, 1].plot(group.r, group.chir_mag, label="chir_mag")
         ax[1, 1].set_xlabel("r(A)")
         ax[1, 1].set_ylabel("$|\chi(R)|$")
         ax[1, 1].set_xlim([0, 6])
-    
+
     # Adjust the layout to prevent overlapping
     plt.tight_layout()
 
@@ -359,87 +391,132 @@ def find_nearest_idx(array, value):
 
 class zanes_data_analysis:
 
-    def __init__(self,data:None|list[Group]=None):
+    def __init__(self, data: None | list[Group] = None):
         if data is None:
-            self.data=[]
+            self.data = []
         else:
-            self.data=data
+            self.data = data
 
-    def read_datacollection(self,filename,datatype:str='Athena',read_range:int|list[int]=None)->None:
-            if isinstance(read_range,int) and read_range is not None:
-                scan=0
-            elif isinstance(read_range,list) and read_range!=[] and len(read_range)!=1:
-                scan_begin=read_range[0]
-                scan_end=read_range[1]
-            elif read_range is None:
-                pass
-            else:
-                raise ValueError("read_range is wrong!")
-            if datatype=='Athena':
-                project_group=read_athena(filename)
-                if isinstance(read_range,(int,np.int16,np.int32,np.int64)):
-                    for key in project_group:
-                        self.data.append(project_group[key])
-                        scan+=1
-                        if scan==read_range:
-                            break
-                if isinstance(read_range,(list,np.ndarray)) and read_range!=[]:
-                    keys=project_group.keys()
-                    for key in keys[scan_begin:scan_end]:
-                        self.data.append(project_group[key])
-                if read_range is None:
-                    keys=project_group.keys()
-                    for key in keys:
-                        self.data.append(project_group[key])
+    def read_datacollection(
+        self, filename, datatype: str = "Athena", read_range: int | list[int] = None
+    ) -> None:
+        if isinstance(read_range, int) and read_range is not None:
+            scan = 0
+        elif isinstance(read_range, list) and read_range != [] and len(read_range) != 1:
+            scan_begin = read_range[0]
+            scan_end = read_range[1]
+        elif read_range is None:
+            pass
+        else:
+            raise ValueError("read_range is wrong!")
+        if datatype == "Athena":
+            project_group = read_athena(filename)
+            if isinstance(read_range, (int, np.int16, np.int32, np.int64)):
+                for key in project_group:
+                    self.data.append(project_group[key])
+                    scan += 1
+                    if scan == read_range:
+                        break
+            if isinstance(read_range, (list, np.ndarray)) and read_range != []:
+                keys = project_group.keys()
+                for key in keys[scan_begin:scan_end]:
+                    self.data.append(project_group[key])
+            if read_range is None:
+                keys = project_group.keys()
+                for key in keys:
+                    self.data.append(project_group[key])
 
-            if datatype=='csv':
-                data_get=pd.read_csv(filename)
-                keys=data_get.keys()
-                if not isinstance(read_range,(list,np.ndarray)) and read_range is not None:
-                    for i in range(1,len(keys)):
-                      
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-                        scan+=1
-                        if scan==read_range:
-                            break
-                if isinstance(read_range,(list,np.ndarray)) and read_range!=[]:
-                    for i in range(scan_begin,scan_end):
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-                if read_range is None:
-                    for i in range(1,len(keys)):
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-            if datatype=='ProQEXAFS':
-                data_get=self.read_data_raw(filename)
-                keys=data_get.keys()
-                if not isinstance(read_range,(list,np.ndarray)) and read_range is not None:
-                    for i in range(1,len(keys)):
-                        
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-                        scan+=1
-                        if scan==read_range:
-                            break
-                if isinstance(read_range,(list,np.ndarray)) and read_range!=[]:
-                    for i in range(scan_begin,scan_end):
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-                if read_range is None:
-                    for i in range(1,len(keys)):
-                        self.data.append(Group(energy=np.array(data_get['E']),mu=np.array(data_get[keys[i]]),label=keys[i]))
-    def read_data_raw(self,filename:str)->pd.DataFrame:
-            with open(filename) as file1:
-                data=file1.readlines()
-            dict_data=dict()
-            for i in range(len(data)):
-                data_lines=data[i].split()
-                for j in range(len(data_lines)):
-                    if j==0:
-                        if 'E' not in dict_data.keys():
-                            dict_data['E']=[]
-                        dict_data['E'].append(float(data_lines[j]))
-                    else:
-                        if j not in dict_data.keys():
-                            dict_data[j]=[]
-                        dict_data[j].append(float(data_lines[j]))
-            return pd.DataFrame(dict_data)
+        if datatype == "csv":
+            data_get = pd.read_csv(filename)
+            keys = data_get.keys()
+            if (
+                not isinstance(read_range, (list, np.ndarray))
+                and read_range is not None
+            ):
+                for i in range(1, len(keys)):
+
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+                    scan += 1
+                    if scan == read_range:
+                        break
+            if isinstance(read_range, (list, np.ndarray)) and read_range != []:
+                for i in range(scan_begin, scan_end):
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+            if read_range is None:
+                for i in range(1, len(keys)):
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+        if datatype == "ProQEXAFS":
+            data_get = self.read_data_raw(filename)
+            keys = data_get.keys()
+            if (
+                not isinstance(read_range, (list, np.ndarray))
+                and read_range is not None
+            ):
+                for i in range(1, len(keys)):
+
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+                    scan += 1
+                    if scan == read_range:
+                        break
+            if isinstance(read_range, (list, np.ndarray)) and read_range != []:
+                for i in range(scan_begin, scan_end):
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+            if read_range is None:
+                for i in range(1, len(keys)):
+                    self.data.append(
+                        Group(
+                            energy=np.array(data_get["E"]),
+                            mu=np.array(data_get[keys[i]]),
+                            label=keys[i],
+                        )
+                    )
+
+    def read_data_raw(self, filename: str) -> pd.DataFrame:
+        with open(filename) as file1:
+            data = file1.readlines()
+        dict_data = dict()
+        for i in range(len(data)):
+            data_lines = data[i].split()
+            for j in range(len(data_lines)):
+                if j == 0:
+                    if "E" not in dict_data.keys():
+                        dict_data["E"] = []
+                    dict_data["E"].append(float(data_lines[j]))
+                else:
+                    if j not in dict_data.keys():
+                        dict_data[j] = []
+                    dict_data[j].append(float(data_lines[j]))
+        return pd.DataFrame(dict_data)
 
     def read_data_raw(self, filename: str) -> pd.DataFrame:
         with open(filename) as file1:
@@ -799,7 +876,7 @@ class zanes_data_analysis:
         batch_num: int | None = None,
     ):
         if batch_size is None:
-            batch_size=len(self.data)
+            batch_size = len(self.data)
         else:
             batch_size = batch_size
         if batch_num is None:

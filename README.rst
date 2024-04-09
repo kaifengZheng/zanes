@@ -93,8 +93,8 @@ Data processing(back ground removal, flattening and plotting)
               wavelet_transform(exp_data.data[0],plot=True)
 
           .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/wavelet_transform.png
-              
-   
+
+
 
     - process all data
 
@@ -144,7 +144,7 @@ Fitting data
          exp_data.read_datacollection(file,datatype='ProQEXAFS')
          exp_data.process_data(data_param)
          dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[0],'feff',save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100)
-         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])   
+         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
          exp_data.write_fitted_data(dset,file,foldername,suffix='_rbkg1_CN_ss')
          output_fit = join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')
          with open(output_fit, "w") as f:
@@ -157,7 +157,7 @@ There is an option to run the fitting on a Linux system by bash command, the cod
 To utilize this code, data should be stored in the **input** folder, and either feff input file or feff results should stored in feff folder. There is a output folder created in the directory.
 
 .. code-block:: bash
-    
+
     python fitting.py --input "${files[0]}" -o output/ -dt ProQEXAFS -bs -1 -os _rbkg1_ss
 
 

@@ -20,12 +20,12 @@ git clone https://github.com/kaifengZheng/zanes.git
 
 
 for dir in input/*
-   do     
-	   files=($dir)     
-	   echo "${files[0]}"  
+   do
+	   files=($dir)
+	   echo "${files[0]}"
 	   python fitting.py --input "${files[0]}" -o output/ -dt ProQEXAFS -bs -1 -os _rbkg1_ss &
 
-   done 
+   done
 wait
 
 

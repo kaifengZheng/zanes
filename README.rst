@@ -23,7 +23,7 @@ Zanes
 A wrapper for XAS analysis and fitting
 
 * Free software: MIT license
-* Documentation: https://zanes.readthedocs.io.
+* Documentation: https://kaifengzheng.github.io/zanes
 
 Introduction
 ------------

@@ -518,23 +518,6 @@ class zanes_data_analysis:
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
 
-    def read_data_raw(self, filename: str) -> pd.DataFrame:
-        with open(filename) as file1:
-            data = file1.readlines()
-        dict_data = dict()
-        for i in range(len(data)):
-            data_lines = data[i].split()
-            for j in range(len(data_lines)):
-                if j == 0:
-                    if "E" not in dict_data.keys():
-                        dict_data["E"] = []
-                    dict_data["E"].append(float(data_lines[j]))
-                else:
-                    if j not in dict_data.keys():
-                        dict_data[j] = []
-                    dict_data[j].append(float(data_lines[j]))
-        return pd.DataFrame(dict_data)
-
     def process_data(self, data_dict: dict, plot: bool = False):
         self.data_processing_params = data_dict
         for d in self.data:
@@ -556,7 +539,7 @@ class zanes_data_analysis:
             )
 
     def fit_param_batch(self, batch_size: int, **p) -> param_group:
-        keys = p.keys()
+        # keys = p.keys()
         fit_param_get = {}
         for k_SO2 in p["SO2"].keys():
             if p["SO2"][k_SO2]["global"]:
@@ -656,68 +639,112 @@ class zanes_data_analysis:
 
     def path_param_batch(
         self,
-        feff_folder: str,
-        fitpath_num: list[int],
+        feff_folder: list[str],
+        fitpath_num: list[list[int]], # feff path from different file
         rules: dict,
         temp=[],
         batch_size: int = 0,
     ) -> list:
         # for now, only consider the first path
         keys = rules.keys()
-        feff_pathes = self.feff_path(feff_folder)
         paths = []
-
         for i in range(batch_size):
-            N_k = list(rules["N"].keys())
-            SO2_k = list(rules["SO2"].keys())
-            dele_k = list(rules["dele"].keys())
-            ss2_k = list(rules["ss2"].keys())
-            dr_k = list(rules["delr"].keys())
-            for j in range(len(fitpath_num)):
-                if rules["SO2"][SO2_k[0]]["global"] and rules["N"][N_k[j]]["global"]:
-                    s02 = f"{N_k[j]}*SO2"
-                elif (
-                    not rules["SO2"][SO2_k[0]]["global"]
-                    and not rules["N"][N_k[j]]["global"]
-                ):
-                    s02 = f"{N_k[j]}_{i}*SO2_{i}"
-                elif (
-                    rules["SO2"][SO2_k[0]]["global"]
-                    and not rules["N"][N_k[j]]["global"]
-                ):
-                    s02 = f"{N_k[j]}_{i}*SO2"
-                else:
-                    s02 = f"N*SO2_{i}"
-                if rules["dele"][dele_k[j]]["global"]:
-                    dele = dele_k[j]
-                else:
-                    dele = f"{dele_k[j]}_{i}"
-                if not rules["ss2"][ss2_k[j]]["thermal"]:
-                    if rules["ss2"][ss2_k[j]]["global"]:
-                        ss2 = ss2_k[j]
-                    else:
-                        ss2 = f"{ss2_k[j]}_{i}"
-                else:
-                    suffix = ss2_k[j].split("_")[1]
-                    if rules["ss2"][ss2_k[j]]["thermal"] == "Einstein":
-                        ss2 = f"{ss2_k[j]}+sigma2_eins({temp[i]},theta_{suffix})"
-                    elif rules["ss2"][ss2_k[j]]["thermal"] == "Debye":
-                        ss2 = f"{ss2_k[j]}+sigma2_debye({temp[i]},theta_{suffix})"
-                if rules["delr"][dr_k[j]]["global"]:
-                    delr = dr_k[j]
-                if not rules["delr"][dr_k[j]]["global"]:
-                    delr = f"{dr_k[j]}_{i}"
+            for f in range(len(feff_folder)):
+                feff_paths = self.feff_path(feff_folder[f])
+                N_k = list(rules["N"].keys())
+                SO2_k = list(rules["SO2"].keys())
+                dele_k = list(rules["dele"].keys())
+                ss2_k = list(rules["ss2"].keys())
+                dr_k = list(rules["delr"].keys())
+                # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
+                total_path_num=np.sum([len(fitpath_num[f]) for f in range(len(fitpath_num))])
+                for j in range(len(fitpath_num[f])):
+                    if len(N_k)==total_path_num:
+                        if rules["SO2"][SO2_k[0]]["global"] and rules["N"][N_k[f+j]]["global"]:
+                            s02 = f"{N_k[f+j]}*SO2"
+                        elif (
+                            not rules["SO2"][SO2_k[0]]["global"]
+                            and not rules["N"][N_k[f+j]]["global"]
+                        ):
+                            s02 = f"{N_k[f+j]}_{i}*SO2_{i}"
+                        elif (
+                            rules["SO2"][SO2_k[0]]["global"]
+                            and not rules["N"][N_k[f+j]]["global"]
+                        ):
+                            s02 = f"{N_k[f+j]}_{i}*SO2"
+                        else:
+                            s02 = f"N*SO2_{i}"
+                    #share path parameter
+                    if len(N_k)<total_path_num:
+                        if rules["SO2"][SO2_k[0]]["global"] and rules["N"][N_k[0]]["global"]:
+                            s02 = f"{N_k[0]}*SO2"
+                        elif (
+                            not rules["SO2"][SO2_k[0]]["global"]
+                            and not rules["N"][N_k[0]]["global"]
+                        ):
+                            s02 = f"{N_k[0]}_{i}*SO2_{i}"
+                        elif (
+                            rules["SO2"][SO2_k[0]]["global"]
+                            and not rules["N"][N_k[0]]["global"]
+                        ):
+                            s02 = f"{N_k[0]}_{i}*SO2"
+                        else:
+                            s02 = f"N*SO2_{i}"
+                    if len(dele_k)==total_path_num:
+                        if rules["dele"][dele_k[f+j]]["global"]:
+                            dele = dele_k[f+j]
+                        else:
+                            dele = f"{dele_k[f+j]}_{i}"
+                    if len(dele_k)<total_path_num:
+                        if rules["dele"][dele_k[0]]["global"]:
+                            dele = dele_k[0]
+                        else:
+                            dele = f"{dele_k[0]}_{i}"
+                    if len(ss2_k)==total_path_num:
+                        if not rules["ss2"][ss2_k[f+j]]["thermal"]:
+                            if rules["ss2"][ss2_k[f+j]]["global"]:
+                                ss2 = ss2_k[f+j]
+                            else:
+                                ss2 = f"{ss2_k[f+j]}_{i}"
+                        else:
+                            suffix = ss2_k[f+j].split("_")[1]
+                            if rules["ss2"][ss2_k[f+j]]["thermal"] == "Einstein":
+                                ss2 = f"{ss2_k[f+j]}+sigma2_eins({temp[i]},theta_{suffix})"
+                            elif rules["ss2"][ss2_k[f+j]]["thermal"] == "Debye":
+                                ss2 = f"{ss2_k[f+j]}+sigma2_debye({temp[i]},theta_{suffix})"
+                    if len(ss2_k)<total_path_num:
+                        if not rules["ss2"][ss2_k[0]]["thermal"]:
+                            if rules["ss2"][ss2_k[0]]["global"]:
+                                ss2 = ss2_k[0]
+                            else:
+                                ss2 = f"{ss2_k[0]}_{i}"
+                        else:
+                            suffix = ss2_k[0].split("_")[1]
+                            if rules["ss2"][ss2_k[0]]["thermal"] == "Einstein":
+                                ss2 = f"{ss2_k[0]}+sigma2_eins({temp[i]},theta_{suffix})"
+                            elif rules["ss2"][ss2_k[0]]["thermal"] == "Debye":
+                                ss2 = f"{ss2_k[0]}+sigma2_debye({temp[i]},theta_{suffix})"
+                    if len(dr_k)==total_path_num:
+                        if rules["delr"][dr_k[f+j]]["global"]:
+                            delr = dr_k[f+j]
+                        if not rules["delr"][dr_k[f+j]]["global"]:
+                            delr = f"{dr_k[f+j]}_{i}"
+                    if len(dr_k)<total_path_num:
+                        if rules["delr"][dr_k[0]]["global"]:
+                            delr = dr_k[0]
+                        if not rules["delr"][dr_k[0]]["global"]:
+                            delr = f"{dr_k[0]}_{i}"
 
-                paths.append(
-                    feffpath(
-                        f"{feff_folder}/{feff_pathes['file'][fitpath_num[j]]}",
-                        s02=s02,
-                        degen=1,
-                        e0=dele,
-                        sigma2=ss2,
-                        deltar=delr,
+                    paths.append(
+                        feffpath(
+                            f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
+                            s02=s02,
+                            degen=1,
+                            e0=dele,
+                            sigma2=ss2,
+                            deltar=delr,
+                        )
                     )
-                )
         return paths
 
     def feff_call(self, path: str) -> None:
@@ -744,59 +771,59 @@ class zanes_data_analysis:
             names=["file", "sig2", "amp ratio", "deg", "nlegs", "r effective"],
         )
 
-    def feff_rules(self, **parm_dict):
+    def feff_rules(self, **param_dict):
         rules = dict()
         rules["SO2"] = {}
-        for k_SO2 in parm_dict["SO2"].keys():
+        for k_SO2 in param_dict["SO2"].keys():
             rules["SO2"][k_SO2] = {
-                "vary": parm_dict["SO2"][k_SO2]["vary"],
-                "global": parm_dict["SO2"][k_SO2]["global"],
+                "vary": param_dict["SO2"][k_SO2]["vary"],
+                "global": param_dict["SO2"][k_SO2]["global"],
             }
         rules["N"] = {}
-        for k_N in parm_dict["N"].keys():
+        for k_N in param_dict["N"].keys():
             rules["N"][k_N] = {
-                "vary": parm_dict["N"][k_N]["vary"],
-                "global": parm_dict["N"][k_N]["global"],
+                "vary": param_dict["N"][k_N]["vary"],
+                "global": param_dict["N"][k_N]["global"],
             }
 
         rules["ss2"] = {}
-        for k_ss2 in parm_dict["ss2"].keys():
+        for k_ss2 in param_dict["ss2"].keys():
 
-            if parm_dict["ss2"][k_ss2]["thermal"]["type"] == False:
+            if not param_dict["ss2"][k_ss2]["thermal"]["type"]:
                 rules["ss2"][k_ss2] = {
-                    "vary": parm_dict["ss2"][k_ss2]["vary"],
-                    "global": parm_dict["ss2"][k_ss2]["global"],
+                    "vary": param_dict["ss2"][k_ss2]["vary"],
+                    "global": param_dict["ss2"][k_ss2]["global"],
                     "thermal": False,
                 }
             else:
                 rules["ss2"][k_ss2] = {
-                    "vary": parm_dict["ss2"][k_ss2]["vary"],
-                    "global": parm_dict["ss2"][k_ss2]["global"],
-                    "thermal": parm_dict["ss2"][k_ss2]["thermal"]["type"],
+                    "vary": param_dict["ss2"][k_ss2]["vary"],
+                    "global": param_dict["ss2"][k_ss2]["global"],
+                    "thermal": param_dict["ss2"][k_ss2]["thermal"]["type"],
                 }
-                theta = parm_dict["ss2"][k_ss2]["thermal"]["theta"]
+                theta = param_dict["ss2"][k_ss2]["thermal"]["theta"]
                 rules["ss2"][k_ss2].update(
                     {"theta": {"vary": theta["vary"], "global": theta["global"]}}
                 )
-            rules["delr"] = {}
-            for dr_k in parm_dict["delr"].keys():
-                rules["delr"][dr_k] = {
-                    "vary": parm_dict["delr"][dr_k]["vary"],
-                    "global": parm_dict["delr"][dr_k]["global"],
-                }
+        rules["delr"] = {}
+        for dr_k in param_dict["delr"].keys():
+            rules["delr"][dr_k] = {
+                "vary": param_dict["delr"][dr_k]["vary"],
+                "global": param_dict["delr"][dr_k]["global"],
+            }
         rules["dele"] = {}
-        for dele in parm_dict["dele"].keys():
+        for dele in param_dict["dele"].keys():
             rules["dele"][dele] = {
-                "vary": parm_dict["dele"][dele]["vary"],
-                "global": parm_dict["dele"][dele]["global"],
+                "vary": param_dict["dele"][dele]["vary"],
+                "global": param_dict["dele"][dele]["global"],
             }
         return rules
 
     def fit_one_batch(
         self,
         parm_dict: dict,
-        feff_folder: str,
-        fitpath_num: int,
+        feff_folder: list[str],
+        fitpath_num: list[list[int]],
         fit_range_param: dict,
         batch_size: int,
         batch_index: int,
@@ -821,17 +848,20 @@ class zanes_data_analysis:
 
         # sa_check=[]
         # sa_check2=[]
+        special_paths=len(paths)//batch_size #number of specific paths for each data
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
+            batch_add_i=0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
                 # sa_check.append(i)
                 # sa_check2.append(i-(batch_index-1)*batch_size)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=[paths[i - (batch_index - 1) * batch_size]],
+                        pathlist=paths[batch_add_i*batch_size:batch_add_i*batch_size+special_paths],#[i - (batch_index - 1) * batch_size]]
                         transform=trans,
                     )
                 )
+                batch_add_i+=1
             true_batch_size = batch_size
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -841,15 +871,17 @@ class zanes_data_analysis:
                 out = feffit(pars, dset)
             report = feffit_report(out)
         if batch_index == batch_num:
+            batch_add_i=0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-
+                # print(paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=[paths[i - (batch_index - 1) * batch_size]],
+                        pathlist=paths[batch_add_i*batch_size:batch_add_i*batch_size+special_paths],#[i - (batch_index - 1) * batch_size]
                         transform=trans,
                     )
                 )
+                batch_add_i+=1
             true_batch_size = len(self.data) - batch_size * (batch_index - 1)
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -866,8 +898,8 @@ class zanes_data_analysis:
         self,
         param_dict: dict,
         fit_range_param: dict,
-        fitpath_num: list[int],
-        feff_folder: str,
+        fitpath_num: list[list[int]],
+        feff_folder: list[str],
         save_name: str = "fit.out",
         write: bool = False,
         mpi: bool = False,

@@ -992,8 +992,9 @@ class zanes_data_analysis:
             batch_num = batch_num
         if batch_size > len(self.data):
             raise ValueError("batch_size is larger than the data size")
-
-        reff = path.reff
+        reff = []
+        for i in range(len(path)):
+            reff.append(path[i].reff) # add reffs for different paths
         if isinstance(reff, float):
             reff = [reff]
         params = {}

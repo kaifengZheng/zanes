@@ -104,20 +104,29 @@ Data processing(back ground removal, flattening and plotting)
 Fitting data
 ~~~~~~~~~~~~~
 
-    Two parameter dictionaries are used in fitting process:
-    - fitting parameters:
+    Two parameter dictionaries are used in the fitting process:
+
+    - multiple-shell fitting parameters:
 
     .. code-block:: JSON
 
        param_dict={
-            'SO2':{"SO2":{'initial':0.84,'vary':False,'global':True}},
-            'dele':{'dele_Pt':{'initial':0.0,'vary':True,'global':True}},
-            'ss2':{'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
-                    'thermal':{'type':False,
-                     'theta':{'initial':400,'vary':True,'global':True}}}},
-            'N':{'N_Pt':{'initial':12.0,'vary':True,'global':True}},
-            'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
-       }
+          'SO2':{"SO2":{'initial':0.84,'vary':False,'global':True}},
+          'dele':{ 'dele':{'initial':3,'vary':True,'global':True}},
+                  #'dele_Pt':{'initial':0,'vary':True,'global':True}},
+          'ss2':{'ss2_O':{'initial':0.003,'vary':True,'global':False,
+                        'thermal':{'type':False,
+                        'theta':{'initial':400,'vary':True,'global':True}}},
+                 'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
+                        'thermal':{'type':False,
+                        'theta':{'initial':400,'vary':True,'global':True}}}},
+          'N':{'N_O':{'initial':6.0,'vary':True,'global':False},
+               'N_Pt':{'initial':12.0,'vary':True,'global':False},
+             },
+          'delr':{'delr_O':{'initial':0.0,'vary':True,'global':False},
+                  'delr_Pt':{'initial':0.0,'vary':True,'global':False},
+                }}
+
     - fitting range parameters
 
     .. code-block:: JSON
@@ -127,10 +136,10 @@ Fitting data
                          'kw':2,
                          'dk':2,
                          'window':'hanning',
-                         'rmin':1.646,
+                         'rmin':1,
                          'rmax':3.292}
 
-    - running and write fitting files(mpi version is under development, use mpi=False for now)
+    - run fitting and write reports (mpi version is under development, use mpi=False for now)
 
     .. code-block:: python
 
@@ -143,8 +152,8 @@ Fitting data
          exp_data=zda()
          exp_data.read_datacollection(file,datatype='ProQEXAFS')
          exp_data.process_data(data_param)
-         dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[0],'feff',save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100)
-         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
+         dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[[0],[0]],['feff_PtO','feff'],save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100) # feff paths can from different feff calculations. There are two paths used in the fitting; the first one comes from the first path in the 'feff_PtO' calculation, and the second one comes from the first path in the 'feff' calculation.
+         report_sort=exp_data.write_sorted_report(out,report,param_dict,path)
          exp_data.write_fitted_data(dset,file,foldername,suffix='_rbkg1_CN_ss')
          output_fit = join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')
          with open(output_fit, "w") as f:

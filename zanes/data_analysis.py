@@ -695,7 +695,7 @@ class zanes_data_analysis:
                             dele = dele_k[f+j]
                         else:
                             dele = f"{dele_k[f+j]}_{i}"
-                    if len(dele_k)<total_path_num:
+                    if len(dele_k)<total_path_num: # share variables for different paths
                         if rules["dele"][dele_k[0]]["global"]:
                             dele = dele_k[0]
                         else:
@@ -854,10 +854,11 @@ class zanes_data_analysis:
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
                 # sa_check.append(i)
                 # sa_check2.append(i-(batch_index-1)*batch_size)
+                # print(paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths])
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=paths[batch_add_i*batch_size:batch_add_i*batch_size+special_paths],#[i - (batch_index - 1) * batch_size]]
+                        pathlist=paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths],#[i - (batch_index - 1) * batch_size]]
                         transform=trans,
                     )
                 )
@@ -877,7 +878,7 @@ class zanes_data_analysis:
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=paths[batch_add_i*batch_size:batch_add_i*batch_size+special_paths],#[i - (batch_index - 1) * batch_size]
+                        pathlist=paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths],#[i - (batch_index - 1) * batch_size]
                         transform=trans,
                     )
                 )

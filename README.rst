@@ -162,8 +162,8 @@ Fitting data
 codes run on linux system(support python >3.10)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is an option to run the fitting on a Linux system by bash command, the codes in  **codes_for_linux** folder. The whole bash script for running the fitting is in **run.slurm**.
-To utilize this code, data should be stored in the **input** folder, and either feff input file or feff results should stored in feff folder. There is a output folder created in the directory.
+There is an option to run the fitting on a Linux system using the bash command. The codes are in the **codes_for_linux** folder. **run.slurm**, the slurm script for submitting jobs on supercluster, contains the whole bash script for running the fitting.
+To utilize this code, XAS spectra should be stored in the **input** folder, and either the FEFF input file or the FEFF results should stored in the FEFF folder. There also requires an output folder created in the directory.
 
 .. code-block:: bash
 

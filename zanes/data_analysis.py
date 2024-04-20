@@ -848,7 +848,7 @@ class zanes_data_analysis:
 
         # sa_check=[]
         # sa_check2=[]
-        special_paths=len(paths)//batch_size #number of specific paths for each data
+        special_paths=len([fitpath_num[i][j] for i in range(len(fitpath_num)) for j in range(len(fitpath_num[i]))]) #number of specific paths for each data
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
             batch_add_i=0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
@@ -874,7 +874,7 @@ class zanes_data_analysis:
         if batch_index == batch_num:
             batch_add_i=0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-                # print(paths)
+                print(batch_add_i*special_paths,(batch_add_i+1)*special_paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],

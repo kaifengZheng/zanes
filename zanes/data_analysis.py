@@ -1117,7 +1117,12 @@ class zanes_data_analysis:
                     )(kdata),
                     6,
                 )
-                data_r[f"{i*j+j}"] = np.round(dset[i][j].model.r, 6)
+                data_r[f"{i*j+j}"] = np.round(
+                    interp1d(
+                        dset[i][j].data.r,
+                        dset[i][j].data.chir_mag)(rdata),
+                    6,
+                )
                 fitted_k[f"{i*j+j}"] = np.round(
                     interp1d(
                         dset[i][j].model.k,
@@ -1126,7 +1131,12 @@ class zanes_data_analysis:
                     )(kdata),
                     6,
                 )
-                fitted_r[f"{i*j+j}"] = np.round(dset[i][j].model.chir_mag, 6)
+                fitted_r[f"{i*j+j}"] = np.round(
+                    interp1d(
+                        dset[i][j].model.r,
+                        dset[i][j].model.chir_mag)(rdata),
+                    6,
+                )
         data_k_table = pd.DataFrame(data_k)
         data_r_table = pd.DataFrame(data_r)
         fitted_k_table = pd.DataFrame(fitted_k)

@@ -703,7 +703,9 @@ class zanes_data_analysis:
                             dele = dele_k[f + j]
                         else:
                             dele = f"{dele_k[f+j]}_{i}"
-                    if len(dele_k) < total_path_num:
+
+                    if len(dele_k)<total_path_num: # share variables for different paths
+
                         if rules["dele"][dele_k[0]]["global"]:
                             dele = dele_k[0]
                         else:
@@ -863,11 +865,13 @@ class zanes_data_analysis:
         special_paths = (
             len(paths) // batch_size
         )  # number of specific paths for each data
+
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
                 # sa_check.append(i)
                 # sa_check2.append(i-(batch_index-1)*batch_size)
+                # print(paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths])
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
@@ -890,7 +894,7 @@ class zanes_data_analysis:
         if batch_index == batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-                # print(paths)
+                print(batch_add_i*special_paths,(batch_add_i+1)*special_paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
@@ -1012,8 +1016,9 @@ class zanes_data_analysis:
             batch_num = batch_num
         if batch_size > len(self.data):
             raise ValueError("batch_size is larger than the data size")
-
-        reff = path.reff
+        reff = []
+        for i in range(len(path)):
+            reff.append(path[i].reff) # add reffs for different paths
         if isinstance(reff, float):
             reff = [reff]
         params = {}
@@ -1121,30 +1126,28 @@ class zanes_data_analysis:
         min_max = min(max_k)
         max_min_r = max(min_r)
         min_max_r = min(max_r)
-        kdata = np.round(np.linspace(max_min, min_max, 500), 4)
-        rdata = np.round(np.linspace(max_min_r, min_max_r, 500), 4)
+        kdata = np.round(np.linspace(max_min+0.001, min_max-0.001, 500), 4)
+        rdata = np.round(np.linspace(max_min_r+0.001, min_max_r-0.001, 500), 4)
         np.savetxt(join(foldername, "kdata.txt"), kdata)
         np.savetxt(join(foldername, "rdata.txt"), rdata)
         for i in range(len(dset)):
             for j in range(len(dset[i])):
-                data_k[f"{i*j+j}"] = np.round(
-                    interp1d(
+                data_k[f"{i*j+j}"] = interp1d(
                         dset[i][j].data.k,
                         dset[i][j].data.chi
                         * dset[i][j].data.k ** dset[i][j].transform.kweight,
-                    )(kdata),
-                    6,
-                )
-                data_r[f"{i*j+j}"] = np.round(dset[i][j].model.r, 6)
-                fitted_k[f"{i*j+j}"] = np.round(
-                    interp1d(
+                    )(kdata)
+                data_r[f"{i*j+j}"] =interp1d(
+                        dset[i][j].data.r,
+                        dset[i][j].data.chir_mag)(rdata)
+                fitted_k[f"{i*j+j}"] =interp1d(
                         dset[i][j].model.k,
                         dset[i][j].model.chi
                         * dset[i][j].model.k ** dset[i][j].transform.kweight,
-                    )(kdata),
-                    6,
-                )
-                fitted_r[f"{i*j+j}"] = np.round(dset[i][j].model.chir_mag, 6)
+                    )(kdata)
+                fitted_r[f"{i*j+j}"] =interp1d(
+                        dset[i][j].model.r,
+                        dset[i][j].model.chir_mag)(rdata)
         data_k_table = pd.DataFrame(data_k)
         data_r_table = pd.DataFrame(data_r)
         fitted_k_table = pd.DataFrame(fitted_k)

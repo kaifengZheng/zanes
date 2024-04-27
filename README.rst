@@ -104,20 +104,29 @@ Data processing(back ground removal, flattening and plotting)
 Fitting data
 ~~~~~~~~~~~~~
 
-    Two parameter dictionaries are used in fitting process:
-    - fitting parameters:
+    Two parameter dictionaries are used in the fitting process:
+
+    - multiple-shell fitting parameters:
 
     .. code-block:: JSON
 
        param_dict={
-            'SO2':{"SO2":{'initial':0.84,'vary':False,'global':True}},
-            'dele':{'dele_Pt':{'initial':0.0,'vary':True,'global':True}},
-            'ss2':{'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
-                    'thermal':{'type':False,
-                     'theta':{'initial':400,'vary':True,'global':True}}}},
-            'N':{'N_Pt':{'initial':12.0,'vary':True,'global':True}},
-            'delr':{'delr_Pt':{'initial':0.0,'vary':True,'global':False}},
-       }
+          'SO2':{"SO2":{'initial':0.84,'vary':False,'global':True}},
+          'dele':{ 'dele':{'initial':3,'vary':True,'global':True}},
+                  #'dele_Pt':{'initial':0,'vary':True,'global':True}},
+          'ss2':{'ss2_O':{'initial':0.003,'vary':True,'global':False,
+                        'thermal':{'type':False,
+                        'theta':{'initial':400,'vary':True,'global':True}}},
+                 'ss2_Pt':{'initial':0.003,'vary':True,'global':False,
+                        'thermal':{'type':False,
+                        'theta':{'initial':400,'vary':True,'global':True}}}},
+          'N':{'N_O':{'initial':6.0,'vary':True,'global':False},
+               'N_Pt':{'initial':12.0,'vary':True,'global':False},
+             },
+          'delr':{'delr_O':{'initial':0.0,'vary':True,'global':False},
+                  'delr_Pt':{'initial':0.0,'vary':True,'global':False},
+                }}
+
     - fitting range parameters
 
     .. code-block:: JSON
@@ -127,10 +136,10 @@ Fitting data
                          'kw':2,
                          'dk':2,
                          'window':'hanning',
-                         'rmin':1.646,
+                         'rmin':1,
                          'rmax':3.292}
 
-    - running and write fitting files(mpi version is under development, use mpi=False for now)
+    - run fitting and write reports (mpi version is under development, use mpi=False for now)
 
     .. code-block:: python
 
@@ -143,18 +152,18 @@ Fitting data
          exp_data=zda()
          exp_data.read_datacollection(file,datatype='ProQEXAFS')
          exp_data.process_data(data_param)
-         dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[0],'feff',save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100)
-         report_sort=exp_data.write_sorted_report(out,report,param_dict,path[0])
-         exp_data.write_fitted_data(dset,file,foldername,suffix='_rbkg1_CN_ss')
-         output_fit = join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')
+         dset,out,report,path=exp_data.run_fit_batch(param_dict,fit_range_param,[[0],[0]],['feff_PtO','feff'],save_name=join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=100) # We can use paths from different feff calculations. 
+         report_sort=exp_data.write_sorted_report(out,report,param_dict,path)                                                 # In this example, there are two paths used in the fitting; 
+         exp_data.write_fitted_data(dset,file,foldername,suffix='_rbkg1_CN_ss')                                               # The first one comes from the first path in the 'feff_PtO' calculation
+         output_fit = join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')                                                     # and the second one comes from the first path in the 'feff' calculation.
          with open(output_fit, "w") as f:
              toml.dump(report_sort,f)
 
 codes run on linux system(support python >3.10)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is an option to run the fitting on a Linux system by bash command, the codes in  **codes_for_linux** folder. The whole bash script for running the fitting is in **run.slurm**.
-To utilize this code, data should be stored in the **input** folder, and either feff input file or feff results should stored in feff folder. There is a output folder created in the directory.
+There is an option to run the fitting on a Linux system using the bash command. The codes are in the **codes_for_linux** folder. **run.slurm**, the slurm script for submitting jobs on supercluster, contains the whole bash script for running the fitting.
+To utilize this code, XAS spectra should be stored in the **input** folder, and either the FEFF input file or the FEFF results should stored in the FEFF folder. There also requires an output folder created in the directory.
 
 .. code-block:: bash
 

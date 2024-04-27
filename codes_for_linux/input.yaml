@@ -15,7 +15,7 @@ fitting_range:
   kw: 2
   dk: 2
   window: hanning
-  rmin: 1.646
+  rmin: 1
   rmax: 3.292
 fitting_param:
   SO2:
@@ -24,11 +24,21 @@ fitting_param:
       vary: false
       global: true
   dele:
-    dele_Pt:
-      initial: 0.0
+    dele:
+      initial: 3
       vary: true
       global: true
   ss2:
+    ss2_O:
+      initial: 0.003
+      vary: true
+      global: false
+      thermal:
+        type: false
+        theta:
+          initial: 400
+          vary: true
+          global: true
     ss2_Pt:
       initial: 0.003
       vary: true
@@ -40,11 +50,19 @@ fitting_param:
           vary: true
           global: true
   N:
+    N_O:
+      initial: 6.0
+      vary: true
+      global: false
     N_Pt:
       initial: 12.0
       vary: true
       global: true
   delr:
+    delr_Pt:
+      initial: 0.0
+      vary: true
+      global: false
     delr_Pt:
       initial: 0.0
       vary: true

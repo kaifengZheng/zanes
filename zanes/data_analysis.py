@@ -640,7 +640,7 @@ class zanes_data_analysis:
     def path_param_batch(
         self,
         feff_folder: list[str],
-        fitpath_num: list[list[int]], # feff path from different file
+        fitpath_num: list[list[int]],  # feff path from different file
         rules: dict,
         temp=[],
         batch_size: int = 0,
@@ -657,26 +657,34 @@ class zanes_data_analysis:
                 ss2_k = list(rules["ss2"].keys())
                 dr_k = list(rules["delr"].keys())
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
-                total_path_num=np.sum([len(fitpath_num[f]) for f in range(len(fitpath_num))])
+                total_path_num = np.sum(
+                    [len(fitpath_num[f]) for f in range(len(fitpath_num))]
+                )
                 for j in range(len(fitpath_num[f])):
-                    if len(N_k)==total_path_num:
-                        if rules["SO2"][SO2_k[0]]["global"] and rules["N"][N_k[f+j]]["global"]:
+                    if len(N_k) == total_path_num:
+                        if (
+                            rules["SO2"][SO2_k[0]]["global"]
+                            and rules["N"][N_k[f + j]]["global"]
+                        ):
                             s02 = f"{N_k[f+j]}*SO2"
                         elif (
                             not rules["SO2"][SO2_k[0]]["global"]
-                            and not rules["N"][N_k[f+j]]["global"]
+                            and not rules["N"][N_k[f + j]]["global"]
                         ):
                             s02 = f"{N_k[f+j]}_{i}*SO2_{i}"
                         elif (
                             rules["SO2"][SO2_k[0]]["global"]
-                            and not rules["N"][N_k[f+j]]["global"]
+                            and not rules["N"][N_k[f + j]]["global"]
                         ):
                             s02 = f"{N_k[f+j]}_{i}*SO2"
                         else:
                             s02 = f"N*SO2_{i}"
-                    #share path parameter
-                    if len(N_k)<total_path_num:
-                        if rules["SO2"][SO2_k[0]]["global"] and rules["N"][N_k[0]]["global"]:
+                    # share path parameter
+                    if len(N_k) < total_path_num:
+                        if (
+                            rules["SO2"][SO2_k[0]]["global"]
+                            and rules["N"][N_k[0]]["global"]
+                        ):
                             s02 = f"{N_k[0]}*SO2"
                         elif (
                             not rules["SO2"][SO2_k[0]]["global"]
@@ -690,29 +698,33 @@ class zanes_data_analysis:
                             s02 = f"{N_k[0]}_{i}*SO2"
                         else:
                             s02 = f"N*SO2_{i}"
-                    if len(dele_k)==total_path_num:
-                        if rules["dele"][dele_k[f+j]]["global"]:
-                            dele = dele_k[f+j]
+                    if len(dele_k) == total_path_num:
+                        if rules["dele"][dele_k[f + j]]["global"]:
+                            dele = dele_k[f + j]
                         else:
                             dele = f"{dele_k[f+j]}_{i}"
-                    if len(dele_k)<total_path_num: # share variables for different paths
+
+                    if (
+                        len(dele_k) < total_path_num
+                    ):  # share variables for different paths
+
                         if rules["dele"][dele_k[0]]["global"]:
                             dele = dele_k[0]
                         else:
                             dele = f"{dele_k[0]}_{i}"
-                    if len(ss2_k)==total_path_num:
-                        if not rules["ss2"][ss2_k[f+j]]["thermal"]:
-                            if rules["ss2"][ss2_k[f+j]]["global"]:
-                                ss2 = ss2_k[f+j]
+                    if len(ss2_k) == total_path_num:
+                        if not rules["ss2"][ss2_k[f + j]]["thermal"]:
+                            if rules["ss2"][ss2_k[f + j]]["global"]:
+                                ss2 = ss2_k[f + j]
                             else:
                                 ss2 = f"{ss2_k[f+j]}_{i}"
                         else:
-                            suffix = ss2_k[f+j].split("_")[1]
-                            if rules["ss2"][ss2_k[f+j]]["thermal"] == "Einstein":
+                            suffix = ss2_k[f + j].split("_")[1]
+                            if rules["ss2"][ss2_k[f + j]]["thermal"] == "Einstein":
                                 ss2 = f"{ss2_k[f+j]}+sigma2_eins({temp[i]},theta_{suffix})"
-                            elif rules["ss2"][ss2_k[f+j]]["thermal"] == "Debye":
+                            elif rules["ss2"][ss2_k[f + j]]["thermal"] == "Debye":
                                 ss2 = f"{ss2_k[f+j]}+sigma2_debye({temp[i]},theta_{suffix})"
-                    if len(ss2_k)<total_path_num:
+                    if len(ss2_k) < total_path_num:
                         if not rules["ss2"][ss2_k[0]]["thermal"]:
                             if rules["ss2"][ss2_k[0]]["global"]:
                                 ss2 = ss2_k[0]
@@ -721,15 +733,19 @@ class zanes_data_analysis:
                         else:
                             suffix = ss2_k[0].split("_")[1]
                             if rules["ss2"][ss2_k[0]]["thermal"] == "Einstein":
-                                ss2 = f"{ss2_k[0]}+sigma2_eins({temp[i]},theta_{suffix})"
+                                ss2 = (
+                                    f"{ss2_k[0]}+sigma2_eins({temp[i]},theta_{suffix})"
+                                )
                             elif rules["ss2"][ss2_k[0]]["thermal"] == "Debye":
-                                ss2 = f"{ss2_k[0]}+sigma2_debye({temp[i]},theta_{suffix})"
-                    if len(dr_k)==total_path_num:
-                        if rules["delr"][dr_k[f+j]]["global"]:
-                            delr = dr_k[f+j]
-                        if not rules["delr"][dr_k[f+j]]["global"]:
+                                ss2 = (
+                                    f"{ss2_k[0]}+sigma2_debye({temp[i]},theta_{suffix})"
+                                )
+                    if len(dr_k) == total_path_num:
+                        if rules["delr"][dr_k[f + j]]["global"]:
+                            delr = dr_k[f + j]
+                        if not rules["delr"][dr_k[f + j]]["global"]:
                             delr = f"{dr_k[f+j]}_{i}"
-                    if len(dr_k)<total_path_num:
+                    if len(dr_k) < total_path_num:
                         if rules["delr"][dr_k[0]]["global"]:
                             delr = dr_k[0]
                         if not rules["delr"][dr_k[0]]["global"]:
@@ -848,9 +864,12 @@ class zanes_data_analysis:
 
         # sa_check=[]
         # sa_check2=[]
-        special_paths=len([fitpath_num[i][j] for i in range(len(fitpath_num)) for j in range(len(fitpath_num[i]))]) #number of specific paths for each data
+        special_paths = (
+            len(paths) // batch_size
+        )  # number of specific paths for each data
+
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
-            batch_add_i=0
+            batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
                 # sa_check.append(i)
                 # sa_check2.append(i-(batch_index-1)*batch_size)
@@ -858,11 +877,14 @@ class zanes_data_analysis:
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths],#[i - (batch_index - 1) * batch_size]]
+                        pathlist=paths[
+                            batch_add_i * batch_size : batch_add_i * batch_size
+                            + special_paths
+                        ],  # [i - (batch_index - 1) * batch_size]]
                         transform=trans,
                     )
                 )
-                batch_add_i+=1
+                batch_add_i += 1
             true_batch_size = batch_size
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -872,17 +894,20 @@ class zanes_data_analysis:
                 out = feffit(pars, dset)
             report = feffit_report(out)
         if batch_index == batch_num:
-            batch_add_i=0
+            batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-                print(batch_add_i*special_paths,(batch_add_i+1)*special_paths)
+                print(batch_add_i * special_paths, (batch_add_i + 1) * special_paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
-                        pathlist=paths[batch_add_i*special_paths:(batch_add_i+1)*special_paths],#[i - (batch_index - 1) * batch_size]
+                        pathlist=paths[
+                            batch_add_i * batch_size : batch_add_i * batch_size
+                            + special_paths
+                        ],  # [i - (batch_index - 1) * batch_size]
                         transform=trans,
                     )
                 )
-                batch_add_i+=1
+                batch_add_i += 1
             true_batch_size = len(self.data) - batch_size * (batch_index - 1)
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -995,7 +1020,7 @@ class zanes_data_analysis:
             raise ValueError("batch_size is larger than the data size")
         reff = []
         for i in range(len(path)):
-            reff.append(path[i].reff) # add reffs for different paths
+            reff.append(path[i].reff)  # add reffs for different paths
         if isinstance(reff, float):
             reff = [reff]
         params = {}
@@ -1103,28 +1128,28 @@ class zanes_data_analysis:
         min_max = min(max_k)
         max_min_r = max(min_r)
         min_max_r = min(max_r)
-        kdata = np.round(np.linspace(max_min+0.001, min_max-0.001, 500), 4)
-        rdata = np.round(np.linspace(max_min_r+0.001, min_max_r-0.001, 500), 4)
+        kdata = np.round(np.linspace(max_min + 0.001, min_max - 0.001, 500), 4)
+        rdata = np.round(np.linspace(max_min_r + 0.001, min_max_r - 0.001, 500), 4)
         np.savetxt(join(foldername, "kdata.txt"), kdata)
         np.savetxt(join(foldername, "rdata.txt"), rdata)
         for i in range(len(dset)):
             for j in range(len(dset[i])):
                 data_k[f"{i*j+j}"] = interp1d(
-                        dset[i][j].data.k,
-                        dset[i][j].data.chi
-                        * dset[i][j].data.k ** dset[i][j].transform.kweight,
-                    )(kdata)
-                data_r[f"{i*j+j}"] =interp1d(
-                        dset[i][j].data.r,
-                        dset[i][j].data.chir_mag)(rdata)
-                fitted_k[f"{i*j+j}"] =interp1d(
-                        dset[i][j].model.k,
-                        dset[i][j].model.chi
-                        * dset[i][j].model.k ** dset[i][j].transform.kweight,
-                    )(kdata)
-                fitted_r[f"{i*j+j}"] =interp1d(
-                        dset[i][j].model.r,
-                        dset[i][j].model.chir_mag)(rdata)
+                    dset[i][j].data.k,
+                    dset[i][j].data.chi
+                    * dset[i][j].data.k ** dset[i][j].transform.kweight,
+                )(kdata)
+                data_r[f"{i*j+j}"] = interp1d(
+                    dset[i][j].data.r, dset[i][j].data.chir_mag
+                )(rdata)
+                fitted_k[f"{i*j+j}"] = interp1d(
+                    dset[i][j].model.k,
+                    dset[i][j].model.chi
+                    * dset[i][j].model.k ** dset[i][j].transform.kweight,
+                )(kdata)
+                fitted_r[f"{i*j+j}"] = interp1d(
+                    dset[i][j].model.r, dset[i][j].model.chir_mag
+                )(rdata)
         data_k_table = pd.DataFrame(data_k)
         data_r_table = pd.DataFrame(data_r)
         fitted_k_table = pd.DataFrame(fitted_k)

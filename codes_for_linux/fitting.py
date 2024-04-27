@@ -60,8 +60,8 @@ exp_data.process_data(norm_param)
 dset, out, report, path = exp_data.run_fit_batch(
     fitting_param,
     fitting_range,
-    [[0],[0]],
-    ["feff_PtO","feff"],
+    [[0], [0]],
+    ["feff_PtO", "feff"],
     save_name=join(foldername, file_name[:-4] + output_surfix),
     write=True,
     mpi=False,

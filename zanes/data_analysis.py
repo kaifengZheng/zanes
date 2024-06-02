@@ -200,64 +200,44 @@ def data_analysis_xanes(
         print(f"E0={group.e0}")  # Print edge jump energy
 
 
-def wavelet_transform(group, kweight=2, plot=False):
-    """
-    Perform wavelet transform on the input group.
+def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk=1,dr=0,windows='hanning',original=True):
+     xftf(group.k,group.chi, kmin=kmin, kmax=kmax, dk=dk, window=windows,
+          kweight=kweight, group=group)
+     xftr(group.r,group.chir, rmin=rmin, rmax=rmax, dr=dr, window=windows,group=group)
+     fig, ax = plt.subplots(2,2, figsize=(8,8), gridspec_kw={'width_ratios': [1, 4],'height_ratios': [4, 1]})
+     k2chi=group.k*group.k*group.chi
+     #morlet_wavelet(k=group.q,chi=group.chiq,group=group,kweight=0)
+     if original==True:
+         X, Y =np.meshgrid(group.k, group.r)
+         cauchy_wavelet(k=group.k,chi=k2chi,group=group)
+     else:
+         X, Y =np.meshgrid(group.q, group.r)
+         cauchy_wavelet(k=group.q,chi=group.chiq,group=group)
+     
+     kwinmax=np.max(group.kwin)
+     kmax=np.max(k2chi)
+     rwinmax=np.max(group.rwin)
+     rmax=np.max(group.chir_mag)
 
-    Args:
-    - group: input group containing chi and k
-    - kweight: exponent for k in the transformation
-    - plot: boolean flag to indicate whether to plot the results
-
-    Note: Cauchy_wavelet acts on the k^kweight*chi*win instead of the k^weight*chi
-    """
-
-    # Apply cauchy_wavelet transformation to the input group
-    cauchy_wavelet(
-        group.k, group.k**kweight * group.chi * group.kwin, group=group, kweight=0
-    )
-
-    # Generate plot if plot flag is set to True
-    if plot:
-        fig, ax = plt.subplots(
-            2,
-            2,
-            figsize=(8, 8),
-            gridspec_kw={"width_ratios": [1, 4], "height_ratios": [4, 1]},
-        )
-        X, Y = np.meshgrid(group.wcauchy_r, group.k)
-
-        # Create contour plot for the wavelet transform
-        contour = ax[0, 1].contourf(
-            X,
-            Y,
-            group.wcauchy_mag.T,
-            cmap="jet",
-            levels=100,
-            vmax=group.wcauchy_mag.max(),
-            vmin=group.wcauchy_mag.min(),
-        )
-
-        # Set labels and titles for the plot
-        scale_win = np.max(group.k**kweight * group.chi * group.kwin) * 1.5
-        k_inten_unit = -kweight
-        r_inten_unit = -kweight - 1
-        ax[0, 0].set_ylabel("$k(\AA^{-1})$")
-        ax[0, 0].set_xlabel(f"$k^{kweight}\chi(\AA^{k_inten_unit})$")
-        ax[0, 0].invert_xaxis()
-        ax[1, 1].set_xlabel("$R(\AA)$")
-        ax[1, 1].set_ylabel(f"$|\chi(R)|$ $(\AA^{r_inten_unit})$")
-        ax[0, 1].set_title(f"Cauchy Wavelet Transform for set {group.label}")
-        ax[0, 1].set_xlim([1, 5])
-        ax[1, 1].plot(group.r, group.chir_mag, label="FFT")
-        ax[1, 1].sharex(ax[0, 1])
-        ax[0, 0].plot(group.k**3 * group.chi, group.k)
-        ax[0, 0].plot(group.kwin * scale_win, group.k, "r")
-        ax[0, 0].sharey(ax[0, 1])
-        ax[1, 0].remove()
-
-        # Display the plot
-        plt.show()
+     # ax[0,1].contourf(, Y/2,coef,cmap='jet',levels=200, vmax=abs(coef).max(), vmin=-abs(coef).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+     # plt.imshow(back_f.wcauchy_mag,label='Wavelet Transform: Magnitude')
+     ax[0,1].contourf(X,Y,group.wcauchy_mag,cmap='jet',levels=200, vmax=abs(group.wcauchy_re).max(), vmin=-abs(group.wcauchy_re).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+     ax[0,0].plot(group.chir_mag,group.r)
+     if original==False:
+         ax[0,0].plot(group.rwin*rmax/rwinmax,group.r)
+     # ax[0,0].invert_xaxis()
+     ax[0,0].set_ylabel('r')
+     ax[0,0].sharey(ax[0,1])
+     ax[1,1].set_xlabel('k')
+     ax[1,1].sharex(ax[0,1])
+     if original==True:
+         ax[1,1].plot(group.k,group.k*group.k*group.chi)
+     if original==False:
+         ax[1,1].plot(group.q,group.chiq)
+    #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
+     ax[0,1].set_ylim(0.1,3)
+     ax[0,1].set_xlim(0,10)
+     ax[1,0].remove()
 
 
 def plot_multi_spectrum(groupset, krange=[2, 12]):

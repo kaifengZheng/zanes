@@ -145,10 +145,10 @@ Fitting data
 
          output_path='results'
          surfix='_rbkg1' #surfix can be used to describe the special conditions to run the fitting. It is useful when one wants to run multiple fittings.
-         file_name=basename(file) # file is the path pointing direct to the datatable to process
-         foldername=join('results',file_name[:-4]+surfix)
+         file_name=os.path.basename(file) # file is the path pointing direct to the datatable to process
+         foldername=os.path.join('results',file_name[:-4]+surfix)
          if not os.path.exists(foldername):
-            mkdir(foldername)
+            os.makedirr(foldername)
          exp_data=zda()
          exp_data.read_datacollection(file,datatype='ProQEXAFS')
          exp_data.process_data(data_param)

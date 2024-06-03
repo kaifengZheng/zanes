@@ -159,8 +159,8 @@ Fitting data
          with open(output_fit, "w") as f:
              toml.dump(report_sort,f)
 
-codes run on linux system(support python >3.10, <3.10 requires to change the typing styles)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Codes run on windows 10 system(support python >3.10, <3.10 requires to change the typing styles)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There is an option to run the fitting on a Linux system using the bash command. The codes are in the **codes_for_linux** folder. **run.slurm**, the slurm script for submitting jobs on supercluster, contains the whole bash script for running the fitting.
 To utilize this code, XAS spectra should be stored in the **input** folder, and either the FEFF input file or the FEFF results should stored in the FEFF folder. There also requires an output folder created in the directory.

@@ -51,8 +51,8 @@ Data processing(back ground removal, flattening and plotting)
         import numpy as np
         import pandas as pd
         from larch import Group
-        from Zanes.zanes.data_analysis import data_processing as dp
-        from Zanes.zanes.data_analysis import zanes_data_analysis as zda
+        from zanes.zanes.data_analysis import data_processing as dp
+        from zanes.zanes.data_analysis import zanes_data_analysis as zda
         from glob import glob
         import toml
         import os

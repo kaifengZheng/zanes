@@ -18,6 +18,7 @@ from functools import partial
 from tqdm import tqdm
 from warnings import warn
 from re import search, match, split
+from typing import List
 
 
 def data_processing(
@@ -240,7 +241,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      ax[1,0].remove()
 
 
-def plot_multi_spectrum(groupset, krange=[2, 12]):
+def plot_multi_spectrum(groupset, krange=[2, 12],kweight=2):
     # Create subplots with 2 rows and 2 columns
     fig, ax = plt.subplots(2, 2, figsize=(8, 5))
 
@@ -264,11 +265,11 @@ def plot_multi_spectrum(groupset, krange=[2, 12]):
         ax[0, 1].set_ylabel("$\mu(E)$")
 
         # Plot chi(k) and related data on the third subplot
-        chi_k = group.k**group.kweight * group.chi
+        chi_k = group.k**kweight * group.chi
         ax[1, 0].plot(group.k, chi_k, label="chi")
         ax[1, 0].plot(group.k, group.kwin * np.max(chi_k) * 1.05, label="kwin")
         ax[1, 0].set_xlabel("k(A$^{-1}$)")
-        ax[1, 0].set_ylabel(f"$k^{group.kweight}$ $\chi(\AA^-{group.kweight})$")
+        ax[1, 0].set_ylabel(f"$k^{kweight}$ $\chi(\AA^-{kweight})$")
         ax[1, 0].set_xlim(0, krange[1] + 2)
         ax[1, 0].set_ylim(-np.max(chi_k) * 1.1, np.max(chi_k) * 1.1)
 
@@ -380,9 +381,9 @@ class zanes_data_analysis:
     def read_datacollection(
         self, filename, datatype: str = "Athena", read_range: int | list[int] = None
     ) -> None:
-        if isinstance(read_range, int) and read_range is not None:
+        if isinstance(read_range, int):
             scan = 0
-        elif isinstance(read_range, list) and read_range != [] and len(read_range) != 1:
+        elif isinstance(read_range, list) and len(read_range) == 2:
             scan_begin = read_range[0]
             scan_end = read_range[1]
         elif read_range is None:
@@ -498,7 +499,7 @@ class zanes_data_analysis:
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
 
-    def process_data(self, data_dict: dict, plot: bool = False):
+    def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
         self.data_processing_params = data_dict
         for d in self.data:
             if "e0" in data_dict.keys():
@@ -515,8 +516,10 @@ class zanes_data_analysis:
                 kweight=data_dict["kweight"],
                 rbkg=data_dict["rbkg"],
                 krange=data_dict["krange"],
-                plot=plot,
+                plot=plot
             )
+        if group_plot:
+            plot_multi_spectrum(self.data, krange=data_dict["krange"],kweight=data_dict["kweight"])
 
     def fit_param_batch(self, batch_size: int, **p) -> param_group:
         # keys = p.keys()

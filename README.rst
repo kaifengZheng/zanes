@@ -6,9 +6,6 @@ Zanes
 .. image:: https://img.shields.io/pypi/v/zanes.svg
         :target: https://pypi.python.org/pypi/zanes
 
-.. image:: https://img.shields.io/travis/kaifengZheng/zanes.svg
-        :target: https://travis-ci.com/kaifengZheng/zanes
-
 .. image:: https://readthedocs.org/projects/zanes/badge/?version=latest
         :target: https://zanes.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status

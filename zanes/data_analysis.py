@@ -645,11 +645,11 @@ class zanes_data_analysis:
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
                 #
                 total_path_num = len(fitpath_num[f])
-                print(total_path_num)
+                # print(total_path_num)
                 # iteration over different paths in the fth folder
                 for j in range(len(fitpath_num[f])):
                     if len(N_k) == total_path_num:
-                        print('pass_1')
+                        # print('pass_1')
                         if (
                             rules["SO2"][SO2_k[0]]["global"]
                             and rules["N"][N_k[f + j]]["global"]
@@ -669,7 +669,7 @@ class zanes_data_analysis:
                             s02 = f"N*SO2_{i}"
                     # share path parameter
                     if len(N_k) < total_path_num:
-                        print('pass_2')
+                        # print('pass_2')
                         if (
                             rules["SO2"][SO2_k[0]]["global"]
                             and rules["N"][N_k[0]]["global"]
@@ -849,11 +849,11 @@ class zanes_data_analysis:
                 feff_folder, fitpath_num, rules=rules, batch_size=batch_size
             )
         trans = feffit_transform(**fit_range_param)
-        print(paths)
+        # print(paths)
         # sa_check=[]
         # sa_check2=[]
         special_paths = len(paths) // batch_size
-        print(f"special_paths={special_paths}")
+        # print(f"special_paths={special_paths}")
           # number of specific paths for each data
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
             batch_add_i = 0

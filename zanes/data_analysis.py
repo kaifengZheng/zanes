@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
+from scipy.spatial.distance import cdist
 import pandas as pd
 import concurrent.futures as confu
 from functools import partial
@@ -498,6 +499,28 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
+    def remove_outliers(self,quantile:float=0.95,plot=False):
+        rspace=[]
+        for i in range(len(self.data)):
+            rspace.append(self.data[i].chir_mag)
+        rspace=np.array(rspace)
+        dist_matrix=cdist(rspace,rspace)
+        dist=np.sum(dist_matrix,axis=0)
+        outlier_index=np.where(dist>np.quantile(dist,quantile))[0]
+        if plot==True:
+            plt.figure()
+            plt.plot(np.arange(len(dist)),dist)
+            plt.plot(outlier_index,dist[outlier_index],".")
+            plt.legend(['data','outliers'])
+            plt.ylabel("distance")
+            plt.xlabel("data index")
+            
+            
+            
+        
+    def pop_data(self,index):
+        self.data.pop(index)
+        
 
     def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
         self.data_processing_params = data_dict

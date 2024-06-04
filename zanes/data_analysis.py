@@ -631,8 +631,11 @@ class zanes_data_analysis:
         # for now, only consider the first path
         keys = rules.keys()
         paths = []
+        # iteration over different data sets
         for i in range(batch_size):
+            # iteration over different feff files
             for f in range(len(feff_folder)):
+                # read all paths in the fth folder
                 feff_paths = self.feff_path(feff_folder[f])
                 N_k = list(rules["N"].keys())
                 SO2_k = list(rules["SO2"].keys())
@@ -640,11 +643,13 @@ class zanes_data_analysis:
                 ss2_k = list(rules["ss2"].keys())
                 dr_k = list(rules["delr"].keys())
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
-                total_path_num = np.sum(
-                    [len(fitpath_num[f]) for f in range(len(fitpath_num))]
-                )
+                #
+                total_path_num = len(fitpath_num[f])
+                print(total_path_num)
+                # iteration over different paths in the fth folder
                 for j in range(len(fitpath_num[f])):
                     if len(N_k) == total_path_num:
+                        print('pass_1')
                         if (
                             rules["SO2"][SO2_k[0]]["global"]
                             and rules["N"][N_k[f + j]]["global"]
@@ -664,6 +669,7 @@ class zanes_data_analysis:
                             s02 = f"N*SO2_{i}"
                     # share path parameter
                     if len(N_k) < total_path_num:
+                        print('pass_2')
                         if (
                             rules["SO2"][SO2_k[0]]["global"]
                             and rules["N"][N_k[0]]["global"]
@@ -733,7 +739,6 @@ class zanes_data_analysis:
                             delr = dr_k[0]
                         if not rules["delr"][dr_k[0]]["global"]:
                             delr = f"{dr_k[0]}_{i}"
-
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
@@ -844,13 +849,12 @@ class zanes_data_analysis:
                 feff_folder, fitpath_num, rules=rules, batch_size=batch_size
             )
         trans = feffit_transform(**fit_range_param)
-
+        print(paths)
         # sa_check=[]
         # sa_check2=[]
-        special_paths = (
-            len(paths) // batch_size
-        )  # number of specific paths for each data
-
+        special_paths = len(paths) // batch_size
+        print(f"special_paths={special_paths}")
+          # number of specific paths for each data
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
@@ -861,13 +865,13 @@ class zanes_data_analysis:
                     feffit_dataset(
                         data=self.data[i],
                         pathlist=paths[
-                            batch_add_i * batch_size : batch_add_i * batch_size
-                            + special_paths
+                             batch_add_i * special_paths: (batch_add_i + 1) * special_paths
                         ],  # [i - (batch_index - 1) * batch_size]]
                         transform=trans,
                     )
                 )
                 batch_add_i += 1
+            #batch_add_i: ith data in the batch
             true_batch_size = batch_size
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -876,21 +880,24 @@ class zanes_data_analysis:
             else:
                 out = feffit(pars, dset)
             report = feffit_report(out)
+
         if batch_index == batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-                print(batch_add_i * special_paths, (batch_add_i + 1) * special_paths)
+                #last iteration
+                #print(batch_add_i * special_paths, (batch_add_i + 1) * special_paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
                         pathlist=paths[
-                            batch_add_i * batch_size : batch_add_i * batch_size
-                            + special_paths
+                            batch_add_i * special_paths: (batch_add_i + 1) * special_paths
                         ],  # [i - (batch_index - 1) * batch_size]
                         transform=trans,
                     )
                 )
+                #batch_add_i: ith data in the batch
                 batch_add_i += 1
+                
             true_batch_size = len(self.data) - batch_size * (batch_index - 1)
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False

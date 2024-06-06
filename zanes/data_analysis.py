@@ -485,6 +485,9 @@ class zanes_data_analysis:
                     )
 
     def read_data_raw(self, filename: str) -> pd.DataFrame:
+        """
+        Read raw data from ProQEXAFS data file, using a very greedy way!
+        """
         with open(filename) as file1:
             data = file1.readlines()
         dict_data = dict()

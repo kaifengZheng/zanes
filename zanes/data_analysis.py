@@ -1148,20 +1148,20 @@ class zanes_data_analysis:
         np.savetxt(join(foldername, "rdata.txt"), rdata)
         for i in range(len(dset)):
             for j in range(len(dset[i])):
-                data_k[f"{i*j+j}"] = interp1d(
+                data_k[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].data.k,
                     dset[i][j].data.chi
                     * dset[i][j].data.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                data_r[f"{i*j+j}"] = interp1d(
+                data_r[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].data.r, dset[i][j].data.chir_mag
                 )(rdata)
-                fitted_k[f"{i*j+j}"] = interp1d(
+                fitted_k[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].model.k,
                     dset[i][j].model.chi
                     * dset[i][j].model.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                fitted_r[f"{i*j+j}"] = interp1d(
+                fitted_r[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].model.r, dset[i][j].model.chir_mag
                 )(rdata)
         data_k_table = pd.DataFrame(data_k)

@@ -8,6 +8,7 @@ from sys import platform
 from larch.xafs.feffit import feffit_transform, feffit_dataset, feffit, feffit_report
 from larch.fitting import param, param_group
 from larch.xafs import feffpath, feffrunner
+from scipy.spatial.distance import cdist
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -499,7 +500,7 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
-    def remove_outliers(self,quantile:float=0.95,plot=False):
+    def remove_outliers(self,quantile:float=0.95,pop=False,plot=False):
         rspace=[]
         for i in range(len(self.data)):
             rspace.append(self.data[i].chir_mag)
@@ -507,6 +508,8 @@ class zanes_data_analysis:
         dist_matrix=cdist(rspace,rspace)
         dist=np.sum(dist_matrix,axis=0)
         outlier_index=np.where(dist>np.quantile(dist,quantile))[0]
+        print(f"num of outliers:{len(outlier_index)}")
+        data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
         if plot==True:
             plt.figure()
             plt.plot(np.arange(len(dist)),dist)
@@ -514,14 +517,12 @@ class zanes_data_analysis:
             plt.legend(['data','outliers'])
             plt.ylabel("distance")
             plt.xlabel("data index")
+        if pop==True:
+            self.data=data_remain
+            print(f"remain data={len(self.data)}")
             
-            
-            
-        
     def pop_data(self,index):
         self.data.pop(index)
-        
-
     def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
         self.data_processing_params = data_dict
         for d in self.data:
@@ -1147,20 +1148,20 @@ class zanes_data_analysis:
         np.savetxt(join(foldername, "rdata.txt"), rdata)
         for i in range(len(dset)):
             for j in range(len(dset[i])):
-                data_k[f"{i*j+j}"] = interp1d(
+                data_k[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].data.k,
                     dset[i][j].data.chi
                     * dset[i][j].data.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                data_r[f"{i*j+j}"] = interp1d(
+                data_r[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].data.r, dset[i][j].data.chir_mag
                 )(rdata)
-                fitted_k[f"{i*j+j}"] = interp1d(
+                fitted_k[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].model.k,
                     dset[i][j].model.chi
                     * dset[i][j].model.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                fitted_r[f"{i*j+j}"] = interp1d(
+                fitted_r[self.data[i*len(dset[i])+j].label] = interp1d(
                     dset[i][j].model.r, dset[i][j].model.chir_mag
                 )(rdata)
         data_k_table = pd.DataFrame(data_k)

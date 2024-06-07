@@ -234,7 +234,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      ax[1,1].set_xlabel('k')
      ax[1,1].sharex(ax[0,1])
      if original==True:
-         ax[1,1].plot(group.k,group.k*group.k*group.chi)
+         ax[1,1].plot(group.k,group.k**kweight*group.chi)
      if original==False:
          ax[1,1].plot(group.q,group.chiq)
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
@@ -483,7 +483,51 @@ class zanes_data_analysis:
                             label=keys[i],
                         )
                     )
+    def read_from_table(self,table,read_range):
+        if isinstance(read_range, int):
+            scan = 0
+        elif isinstance(read_range, list) and len(read_range) == 2:
+            scan_begin = read_range[0]
+            scan_end = read_range[1]
+        elif read_range is None:
+            pass
+        else:
+            raise ValueError("read_range is wrong!")
+        keys = table.keys()
+        if (
+            not isinstance(read_range, (list, np.ndarray))
+            and read_range is not None
+        ):
+            for i in range(1, len(keys)):
 
+                self.data.append(
+                    Group(
+                        energy=np.array(table["E"]),
+                        mu=np.array(table[keys[i]]),
+                        label=keys[i],
+                    )
+                )
+                scan += 1
+                if scan == read_range:
+                    break
+        if isinstance(read_range, (list, np.ndarray)) and read_range != []:
+            for i in range(scan_begin, scan_end):
+                self.data.append(
+                    Group(
+                        energy=np.array(table["E"]),
+                        mu=np.array(table[keys[i]]),
+                        label=keys[i],
+                    )
+                )
+        if read_range is None:
+            for i in range(1, len(keys)):
+                self.data.append(
+                    Group(
+                        energy=np.array(table["E"]),
+                        mu=np.array(table[keys[i]]),
+                        label=keys[i],
+                    )
+                )
     def read_data_raw(self, filename: str) -> pd.DataFrame:
         """
         Read raw data from ProQEXAFS data file, using a very greedy way!
@@ -503,7 +547,6 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
-    
     def remove_outliers(self,quantile:float=0.95,pop=False,plot=False):
         rspace=[]
         for i in range(len(self.data)):

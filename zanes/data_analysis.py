@@ -547,27 +547,69 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
-    def remove_outliers(self,quantile:float=0.95,pop=False,plot=False):
+    def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95}):
+        """
+            method={'name':'running_mean','num':5,'delta':0}
+            method={'name':'max',"quantile":0.95}
+            
+        """
+        def running_mean(dist,num):
+            mean_array=[]
+            std_array=[]
+            for i in range(len(dist)):
+                
+                if num+i+1<=len(dist):
+                    limit=np.quantile(dist[i:i+num+1],0.95)
+                    # print(dist[i:i+num+1])
+                    # calculate mean and std dev. no influence from outliers
+                    mean_array.append(np.mean([dist[i:i+num+1][j] for j in range(num+1) if dist[i:i+num+1][j]<limit]))
+                    std_array.append(np.std([dist[i:i+num+1][j] for j in range(num+1) if dist[i:i+num+1][j]<limit]))
+                else:
+                    limit=np.quantile(dist[i:len(dist)],0.95)
+                    mean_array.append(np.mean([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
+                    std_array.append(np.std([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
+            return mean_array,std_array
+        
         rspace=[]
         for i in range(len(self.data)):
-            rspace.append(self.data[i].chir_mag)
+            index=np.where((self.data[i].r<rrange[1]) & (self.data[i].r>rrange[0]))[0]
+            rspace.append(self.data[i].chir_mag[index[0]:index[-1]])
+            
         rspace=np.array(rspace)
         dist_matrix=cdist(rspace,rspace)
-        dist=np.sum(dist_matrix,axis=0)
-        outlier_index=np.where(dist>np.quantile(dist,quantile))[0]
-        print(f"num of outliers:{len(outlier_index)}")
-        data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
+        dist=np.mean(dist_matrix,axis=0)
+        if method['name']=='max':    
+            outlier_index=np.where(dist>np.quantile(dist,method['quantile']))[0]
+            print(f"num of outliers:{len(outlier_index)}")
+            data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
+        if method['name']=='running_mean':
+            mean_array,std_array=running_mean(dist,method['num'])
+            mean_array=np.array(mean_array)
+            std_array=np.array(std_array)
+            outlier_index=[]
+            
+            for i in range(len(mean_array)):
+                if dist[i]> mean_array[i]+method['delta']*std_array[i] or dist[i]< mean_array[i]-method['delta']*std_array[i]:
+                    outlier_index.append(i)
+            outlier_index=np.array(outlier_index)
+            print(f"num of outliers:{len(outlier_index)}")
+            data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
         if plot==True:
             plt.figure()
-            plt.plot(np.arange(len(dist)),dist)
-            plt.plot(outlier_index,dist[outlier_index],".")
-            plt.legend(['data','outliers'])
+            plt.plot(np.arange(len(dist)),dist,label='data',color='cyan',alpha=0.7)
+            plt.plot(outlier_index,dist[outlier_index],".",label='outlier')
+            if method['name']=='running_mean':
+                plt.plot(np.arange(len(self.data)),mean_array,'--',color='red',alpha=0.6,linewidth=2,label='mean')
+                delta=method['delta']
+                plt.fill_between(np.arange(len(self.data)),mean_array-method['delta']*std_array,mean_array+method['delta']*std_array,color='orange',alpha=0.5,label=f'mean$\pm${delta}$\delta$')
+            plt.legend(frameon=False)
             plt.ylabel("distance")
             plt.xlabel("data index")
         if pop==True:
             self.data=data_remain
             print(f"remain data={len(self.data)}")
-            
+        return dist
+           
     def pop_data(self,index):
         self.data.pop(index)
     def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):

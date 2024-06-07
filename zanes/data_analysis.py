@@ -503,6 +503,7 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
+    
     def remove_outliers(self,quantile:float=0.95,pop=False,plot=False):
         rspace=[]
         for i in range(len(self.data)):

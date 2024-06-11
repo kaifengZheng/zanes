@@ -756,11 +756,16 @@ class zanes_data_analysis:
                 ss2_k = list(rules["ss2"].keys())
                 dr_k = list(rules["delr"].keys())
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
-                #
-                total_path_num = len(fitpath_num[f])
+                
+                total_path_num = int(np.sum([len(fitpath_num[ff]) for ff in range(len(fitpath_num))]))
                 # print(total_path_num)
                 # iteration over different paths in the fth folder
                 for j in range(len(fitpath_num[f])):
+                    s02 = None
+                    dele = None
+                    ss2 = None
+                    delr = None
+                    
                     if len(N_k) == total_path_num:
                         # print('pass_1')
                         if (
@@ -852,6 +857,8 @@ class zanes_data_analysis:
                             delr = dr_k[0]
                         if not rules["delr"][dr_k[0]]["global"]:
                             delr = f"{dr_k[0]}_{i}"
+                            
+                    # print(rules)
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",

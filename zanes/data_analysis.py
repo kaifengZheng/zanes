@@ -162,7 +162,7 @@ def data_analysis_xanes(
     - None
     """
 
-    if "e0" not in group.keys() and group.e0 is None and e0 is None:
+    if "e0" not in group.keys() or group.e0 is None or e0 is None:
         find_e0(group)  # Find the edge jump energy if not given
         e0 = group.e0
     interfunc = interp1d(group.energy, group.mu)  # Interpolate mu vs energy

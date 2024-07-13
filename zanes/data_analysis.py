@@ -862,7 +862,7 @@ class zanes_data_analysis:
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
-                            s02="abs("+s02+")",
+                            s02="abs("+s02+")", #abs(N*SO2)
                             degen=1,
                             e0=dele,
                             sigma2="abs("+ss2+")",

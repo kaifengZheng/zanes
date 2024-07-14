@@ -203,7 +203,10 @@ def data_analysis_xanes(
         print(f"E0={group.e0}")  # Print edge jump energy
 
 
-def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk=1,dr=0,windows='hanning',original=True):
+def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk=1,dr=0,windows='hanning',original=True,plot_spec=dict()):
+     '''
+     plot_spec: {rrange=[],krange=[]}
+     '''
      xftf(group.k,group.chi, kmin=kmin, kmax=kmax, dk=dk, window=windows,
           kweight=kweight, group=group)
      xftr(group.r,group.chir, rmin=rmin, rmax=rmax, dr=dr, window=windows,group=group)
@@ -238,8 +241,8 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      if original==False:
          ax[1,1].plot(group.q,group.chiq)
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
-     ax[0,1].set_ylim(0.1,3)
-     ax[0,1].set_xlim(0,10)
+     ax[0,1].set_ylim(plot_spec['rrange'][0],plot_spec['rrange'][1])
+     ax[0,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
      ax[1,0].remove()
 
 
@@ -862,10 +865,10 @@ class zanes_data_analysis:
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
-                            s02=s02,
+                            s02="abs("+s02+")",
                             degen=1,
                             e0=dele,
-                            sigma2=ss2,
+                            sigma2="abs("+ss2+")",
                             deltar=delr,
                         )
                     )

@@ -550,6 +550,24 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
+    def deglitch_k(self, act_range,data_dict,kweight=0,window_length=10,polyorder=3):
+        for i in range(len(self.data)):
+            k=self.data[i].k
+            chi=self.data[i].chi
+            chi_de=deglitch_Sfilter(k,k**kweight*chi,act_range,window_length,polyorder)
+            self.data[i].chi=chi_de
+            xftf(
+                k=self.data[i].k,
+                chi=self.data[i].chi,
+                dk=2,
+                kweight=data_dict['kweight'],
+                group=self.data[i],
+                kmin=data_dict["krange"][0],
+                kmax=data_dict["krange"][1],
+                kstep=self.data[i].k[2] - self.data[i].k[1],
+                window="hanning",
+            )
+
     def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95}):
         """
             method={'name':'running_mean','num':5,'delta':0}

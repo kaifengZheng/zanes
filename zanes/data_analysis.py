@@ -219,7 +219,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      else:
          X, Y =np.meshgrid(group.q, group.r)
          cauchy_wavelet(k=group.q,chi=group.chiq,group=group)
-     
+
      kwinmax=np.max(group.kwin)
      kmax=np.max(k2chi)
      rwinmax=np.max(group.rwin)
@@ -554,13 +554,13 @@ class zanes_data_analysis:
         """
             method={'name':'running_mean','num':5,'delta':0}
             method={'name':'max',"quantile":0.95}
-            
+
         """
         def running_mean(dist,num):
             mean_array=[]
             std_array=[]
             for i in range(len(dist)):
-                
+
                 if num+i+1<=len(dist):
                     limit=np.quantile(dist[i:i+num+1],0.95)
                     # print(dist[i:i+num+1])
@@ -572,16 +572,16 @@ class zanes_data_analysis:
                     mean_array.append(np.mean([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
                     std_array.append(np.std([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
             return mean_array,std_array
-        
+
         rspace=[]
         for i in range(len(self.data)):
             index=np.where((self.data[i].r<rrange[1]) & (self.data[i].r>rrange[0]))[0]
             rspace.append(self.data[i].chir_mag[index[0]:index[-1]])
-            
+
         rspace=np.array(rspace)
         dist_matrix=cdist(rspace,rspace)
         dist=np.mean(dist_matrix,axis=0)
-        if method['name']=='max':    
+        if method['name']=='max':
             outlier_index=np.where(dist>np.quantile(dist,method['quantile']))[0]
             print(f"num of outliers:{len(outlier_index)}")
             data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
@@ -590,7 +590,7 @@ class zanes_data_analysis:
             mean_array=np.array(mean_array)
             std_array=np.array(std_array)
             outlier_index=[]
-            
+
             for i in range(len(mean_array)):
                 if dist[i]> mean_array[i]+method['delta']*std_array[i] or dist[i]< mean_array[i]-method['delta']*std_array[i]:
                     outlier_index.append(i)
@@ -612,7 +612,7 @@ class zanes_data_analysis:
             self.data=data_remain
             print(f"remain data={len(self.data)}")
         return dist
-           
+
     def pop_data(self,index):
         self.data.pop(index)
     def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
@@ -759,7 +759,7 @@ class zanes_data_analysis:
                 ss2_k = list(rules["ss2"].keys())
                 dr_k = list(rules["delr"].keys())
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
-                
+
                 total_path_num = int(np.sum([len(fitpath_num[ff]) for ff in range(len(fitpath_num))]))
                 # print(total_path_num)
                 # iteration over different paths in the fth folder
@@ -768,7 +768,7 @@ class zanes_data_analysis:
                     dele = None
                     ss2 = None
                     delr = None
-                    
+
                     if len(N_k) == total_path_num:
                         # print('pass_1')
                         if (
@@ -860,12 +860,12 @@ class zanes_data_analysis:
                             delr = dr_k[0]
                         if not rules["delr"][dr_k[0]]["global"]:
                             delr = f"{dr_k[0]}_{i}"
-                            
+
                     # print(rules)
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
-                            s02="abs("+s02+")", #abs(N*SO2)
+                            s02=s02, #abs(N*SO2)
                             degen=1,
                             e0=dele,
                             sigma2="abs("+ss2+")",
@@ -1020,7 +1020,7 @@ class zanes_data_analysis:
                 )
                 #batch_add_i: ith data in the batch
                 batch_add_i += 1
-                
+
             true_batch_size = len(self.data) - batch_size * (batch_index - 1)
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -1248,7 +1248,7 @@ class zanes_data_analysis:
         for i in range(len(dset)):
             for j in range(len(dset[i])):
                 # print((i,len(dset[i]),j))
-                # warning the last dset[i] may have different length than others 
+                # warning the last dset[i] may have different length than others
                 data_k[self.data[i*len(dset[0])+j].label] = interp1d(
                     dset[i][j].data.k,
                     dset[i][j].data.chi

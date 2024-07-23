@@ -568,7 +568,7 @@ class zanes_data_analysis:
                 window="hanning",
             )
 
-    def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95}):
+    def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95},name="",save_plot=False,save_plot_format='eps'):
         """
             method={'name':'running_mean','num':5,'delta':0}
             method={'name':'max',"quantile":0.95}
@@ -622,10 +622,14 @@ class zanes_data_analysis:
             if method['name']=='running_mean':
                 plt.plot(np.arange(len(self.data)),mean_array,'--',color='red',alpha=0.6,linewidth=2,label='mean')
                 delta=method['delta']
-                plt.fill_between(np.arange(len(self.data)),mean_array-method['delta']*std_array,mean_array+method['delta']*std_array,color='orange',alpha=0.5,label=f'mean$\pm${delta}$\delta$')
+                plt.fill_between(np.arange(len(self.data)),mean_array-method['delta']*std_array,mean_array+method['delta']*std_array,color='orange',alpha=0.5,label=f'mean$\pm${delta}$\sigma$')
             plt.legend(frameon=False)
             plt.ylabel("distance")
             plt.xlabel("data index")
+            plt.title(f"outlier detection: {name}")
+            if save_plot==True:
+                plt.savefig(name+f"_outlier_detection.{save_plot_format}",format=save_plot_format)
+
         if pop==True:
             self.data=data_remain
             print(f"remain data={len(self.data)}")

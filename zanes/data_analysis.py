@@ -43,7 +43,8 @@ def data_processing(
 
     Args:
     - group: dictionary containing energy and mu data
-    - e0: edge energy
+    - e0: edge energy NOTE: e0 can be slightly different from given value, 
+          since the algorithm in the pre-edge map the given e0 to the nearest energy point.
     - pre_start: start of the pre-edge region
     - pre_end: end of the pre-edge region
     - post_start: start of the post-edge region
@@ -60,21 +61,26 @@ def data_processing(
     - Processed X-ray absorption spectroscopy data
 
     """
-
+    # print(f"e0={e0}")
     if "e0" not in group.keys() and e0 is None:
         find_e0(group)
         e0 = group.e0
+    # print(f"e0={e0}")
+    if e0 is not None:
+        group.e0 = e0
     interfunc = interp1d(group.energy, group.mu)
+    # print(f"group.e0={group.e0}")
     pre_edge(
         group,
-        e0=e0,
         pre1=pre_start,
         pre2=pre_end,
         norm1=post_start,
         norm2=post_end,
         nnorm=nnorm,
     )
-    autobk(energy=group.energy, mu=group.mu, group=group, e0=e0, rbkg=rbkg, kweight=2)
+    # print(f"after pre_edge group.e0={group.e0}")
+    autobk(energy=group.energy, mu=group.mu, group=group, rbkg=rbkg, kweight=2)
+    # print(f"after autobk group.e0={group.e0}")
     xftf(
         k=group.k,
         chi=group.chi,

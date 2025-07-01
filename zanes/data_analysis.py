@@ -213,6 +213,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      '''
      plot_spec: {rrange=[],krange=[]}
      '''
+     print(group)
      xftf(group.k,group.chi, kmin=kmin, kmax=kmax, dk=dk, window=windows,
           kweight=kweight, group=group)
      xftr(group.r,group.chir, rmin=rmin, rmax=rmax, dr=dr, window=windows,group=group)
@@ -221,19 +222,20 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      #morlet_wavelet(k=group.q,chi=group.chiq,group=group,kweight=0)
      if original==True:
          X, Y =np.meshgrid(group.k, group.r)
-         cauchy_wavelet(k=group.k,chi=k2chi,group=group)
+         cauchy_wavelet(k=group.k,chi=group.chi*group.k**kweight*group.kwin,group=group,)
      else:
          X, Y =np.meshgrid(group.q, group.r)
          cauchy_wavelet(k=group.q,chi=group.chiq,group=group)
 
      kwinmax=np.max(group.kwin)
-     kmax=np.max(k2chi)
+     kmax=np.max(group.chi*group.k**kweight)
      rwinmax=np.max(group.rwin)
      rmax=np.max(group.chir_mag)
 
      # ax[0,1].contourf(, Y/2,coef,cmap='jet',levels=200, vmax=abs(coef).max(), vmin=-abs(coef).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
      # plt.imshow(back_f.wcauchy_mag,label='Wavelet Transform: Magnitude')
-     ax[0,1].contourf(X,Y,group.wcauchy_mag,cmap='jet',levels=200, vmax=abs(group.wcauchy_re).max(), vmin=-abs(group.wcauchy_re).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+     cf=ax[0,1].contourf(X,Y,group.wcauchy_mag,cmap='jet',levels=200, vmax=abs(group.wcauchy_re).max(), vmin=-abs(group.wcauchy_re).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+     cbar=fig.colorbar(cf,ax=ax[0,1],orientation='vertical',fraction=0.05,pad=0.04)
      ax[0,0].plot(group.chir_mag,group.r)
      if original==False:
          ax[0,0].plot(group.rwin*rmax/rwinmax,group.r)
@@ -244,12 +246,17 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
      ax[1,1].sharex(ax[0,1])
      if original==True:
          ax[1,1].plot(group.k,group.k**kweight*group.chi)
+         ax[1,1].plot(group.k,group.kwin*kmax/kwinmax,'r-')
+         ax[1,1].plot(group.k,group.kwin*group.chi*group.k**kweight,'g--')
      if original==False:
          ax[1,1].plot(group.q,group.chiq)
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
      ax[0,1].set_ylim(plot_spec['rrange'][0],plot_spec['rrange'][1])
      ax[0,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
+     
      ax[1,0].remove()
+     ax[1,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
+     ax[1,1].set_ylim(-kmax*1.1, kmax*1.1)
 
 
 def plot_multi_spectrum(groupset, krange=[2, 12],kweight=2):

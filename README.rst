@@ -85,7 +85,7 @@ Data processing(back ground removal, flattening and plotting)
 
             ZANES_module.process_data(data_dict=data_param,group_plot=True)
 
-        .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/data_analysis.png
+        .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/data_analysis_all.png
     - wavelet transform
           .. code-block:: python
 
@@ -148,7 +148,7 @@ Fitting data
         output_fit = os.path.join(foldername,file_name[:-4]+'_rbkg1_CN_ss.toml')                                                     # and the second one comes from the first path in the 'feff' calculation.
         with open(output_fit, "w") as f:
             toml.dump(report_sort,f)
- .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/wavelet_transform.png
+ .. image:: https://github.com/kaifengZheng/zanes/blob/distortion/docs/_satic/fittingOne.png
 
 EXAMPLE
 -------
@@ -178,4 +178,5 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
 

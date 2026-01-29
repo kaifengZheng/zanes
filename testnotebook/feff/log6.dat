@@ -1,0 +1,19 @@
+ Calculating chi...
+ feffdt, feff.pad to feff.dat conversion: Feff8L (EXAFS)      release  0.1
+ Pd                                             Feff8L (EXAFS)       0.1
+ POT  Non-SCF, core-hole, AFOLP (folp(0)= 1.150)
+ Abs   Z=46 Rmt= 1.523 Rnm= 1.569 K  shell
+ Pot 1 Z=46 Rmt= 1.467 Rnm= 1.504
+ Gam_ch=7.677E+00 H-L exch
+ Mu= 2.525E-02 kf=1.785E+00 Vint=-1.211E+01 Rs_int= 2.032
+ PATH  Rmax= 5.000,  Keep_limit= 0.00, Heap_limit 0.00  Pwcrit= 2.50%
+       5 paths to process
+    path     filename
+       1     feff0001.dat
+       2     feff0002.dat
+       3     feff0003.dat
+       4     feff0004.dat
+       5     feff0005.dat
+    Use all paths with cw amplitude ratio   4.00%
+    S02  1.000  Global sig2  0.00000
+ Done with module 6: DW + final sum over paths.

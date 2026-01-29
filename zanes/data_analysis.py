@@ -302,10 +302,11 @@ def plot_multi_spectrum(groupset, krange=[2, 12],kweight=2):
 
 
 def BF_analysis(group, kweight=3, rrange=[], krange=[]):
-    # Perform Back Fourier Analysis on the input group data
-    # with optional kweight, rrange, and krange parameters
-
-    # Perform Fourier Transform
+    """
+    Perform Back Fourier Analysis on the input group data
+    with optional kweight, rrange, and krange parameters
+    Perform Fourier Transform
+    """
     xftr(
         r=group.r,
         chir=group.chir,
@@ -1139,7 +1140,7 @@ class zanes_data_analysis:
                 batch_nums.append(batch_num)
         if write == True:
             self.write_report_mini_batch(save_name, reports, batch_nums)
-        return dsets, outs, reports, paths
+        return dsets, outs, reports,paths
 
     def write_report_mini_batch(self, filename: str, report: list, batch_size: int):
         try:

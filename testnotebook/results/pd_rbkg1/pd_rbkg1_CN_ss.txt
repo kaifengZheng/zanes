@@ -1,0 +1,124 @@
+============batch 0============
+batch size: 3
+=================== FEFFIT RESULTS ====================
+[[Statistics]]
+  n_function_calls     = 78
+  n_variables          = 10
+  n_data_points        = 450
+  n_independent        = 51.1513731
+  chi_square           = 1001.65112
+  reduced chi_square   = 24.3406489
+  r-factor             = 0.00944859
+  Akaike info crit     = 172.155678
+  Bayesian info crit   = 191.503571
+ 
+[[Parameters]]
+  N_Pt_0               =  8.4418996 +/- 0.4672938  (init= 12.000000)
+  N_Pt_1               =  10.441035 +/- 0.6220557  (init= 12.000000)
+  N_Pt_2               =  8.3215080 +/- 0.4797348  (init= 12.000000)
+  SO2                  =  0.8400000 (fixed)
+  dele                 = -3.0816760 +/- 0.2425110  (init= 3.0000000)
+  delr_Pt_0            = -0.0324398 +/- 0.0018565  (init= 0.0000000)
+  delr_Pt_1            = -0.0342579 +/- 0.0018002  (init= 0.0000000)
+  delr_Pt_2            =  0.0408979 +/- 0.0021756  (init= 0.0000000)
+  ss2_Pt_0             =  0.0062159 +/- 3.3248e-4  (init= 0.0030000)
+  ss2_Pt_1             =  0.0052872 +/- 3.3733e-4  (init= 0.0030000)
+  ss2_Pt_2             =  0.0077789 +/- 3.8212e-4  (init= 0.0030000)
+ 
+[[Correlations]] (unreported correlations are <  0.100)
+  N_Pt_1, ss2_Pt_1     =  0.900
+  N_Pt_0, ss2_Pt_0     =  0.889
+  N_Pt_2, ss2_Pt_2     =  0.873
+  dele, delr_Pt_0      =  0.582
+  dele, delr_Pt_2      =  0.578
+  dele, delr_Pt_1      =  0.556
+  delr_Pt_0, delr_Pt_2 =  0.337
+  delr_Pt_0, delr_Pt_1 =  0.323
+  delr_Pt_1, delr_Pt_2 =  0.322
+  N_Pt_1, delr_Pt_1    =  0.177
+  delr_Pt_1, ss2_Pt_1  =  0.175
+  N_Pt_0, delr_Pt_0    =  0.169
+  N_Pt_2, delr_Pt_2    =  0.169
+  delr_Pt_0, ss2_Pt_0  =  0.166
+  delr_Pt_2, ss2_Pt_2  =  0.166
+ 
+[[Dataset 1 of 3]]
+  unique_id            = 'd2ihwenm'
+  fit space            = 'r'
+  r-range              = 1.000, 3.292
+  k-range              = 2.000, 13.000
+  k window, dk         = 'hanning', 2.000
+  paths used in fit    = ['c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat']
+  k-weight             = 2
+  epsilon_k            = Array(mean=7.6497e-4, std=5.9221e-4)
+  epsilon_r            = 0.0131486
+  n_independent        = 17.050
+ 
+[[Paths]]
+ = Path 'p2rcadm7z' Pd K Edge
+    feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
+    geometry  atom      x        y        z      ipot
+              Pd      -0.00000, -0.00000, -0.00000  0%s (absorber)
+              Pd       1.95860, -0.00000, -1.95860  1
+     reff   =  2.7699000
+     degen  =  1.0000000
+     n*s02  =  7.0911956 +/- 0.3925268  := 'N_Pt_0*SO2'
+     e0     = -3.0816760 +/- 0.2425110  := 'dele'
+     r      =  2.7374602 +/- 0.0018565  := 'reff + delr_Pt_0'
+     deltar = -0.0324398 +/- 0.0018565  := 'delr_Pt_0'
+     sigma2 =  0.0062159 +/- 3.3248e-4  := 'abs(ss2_Pt_0)'
+
+[[Dataset 2 of 3]]
+  unique_id            = 'd4boi7vt'
+  fit space            = 'r'
+  r-range              = 1.000, 3.292
+  k-range              = 2.000, 13.000
+  k window, dk         = 'hanning', 2.000
+  paths used in fit    = ['c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat']
+  k-weight             = 2
+  epsilon_k            = Array(mean=0.0011209, std=0.0027944)
+  epsilon_r            = 0.0192670
+  n_independent        = 17.050
+ 
+[[Paths]]
+ = Path 'p2rcadm7z' Pd K Edge
+    feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
+    geometry  atom      x        y        z      ipot
+              Pd      -0.00000, -0.00000, -0.00000  0%s (absorber)
+              Pd       1.95860, -0.00000, -1.95860  1
+     reff   =  2.7699000
+     degen  =  1.0000000
+     n*s02  =  8.7704690 +/- 0.5225268  := 'N_Pt_1*SO2'
+     e0     = -3.0816760 +/- 0.2425110  := 'dele'
+     r      =  2.7356421 +/- 0.0018002  := 'reff + delr_Pt_1'
+     deltar = -0.0342579 +/- 0.0018002  := 'delr_Pt_1'
+     sigma2 =  0.0052872 +/- 3.3733e-4  := 'abs(ss2_Pt_1)'
+
+[[Dataset 3 of 3]]
+  unique_id            = 'dcsnqhzl'
+  fit space            = 'r'
+  r-range              = 1.000, 3.292
+  k-range              = 2.000, 13.000
+  k window, dk         = 'hanning', 2.000
+  paths used in fit    = ['c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat']
+  k-weight             = 2
+  epsilon_k            = Array(mean=6.2432e-4, std=6.5015e-4)
+  epsilon_r            = 0.0107310
+  n_independent        = 17.050
+ 
+[[Paths]]
+ = Path 'p2rcadm7z' Pd K Edge
+    feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
+    geometry  atom      x        y        z      ipot
+              Pd      -0.00000, -0.00000, -0.00000  0%s (absorber)
+              Pd       1.95860, -0.00000, -1.95860  1
+     reff   =  2.7699000
+     degen  =  1.0000000
+     n*s02  =  6.9900667 +/- 0.4029772  := 'N_Pt_2*SO2'
+     e0     = -3.0816760 +/- 0.2425110  := 'dele'
+     r      =  2.8107979 +/- 0.0021756  := 'reff + delr_Pt_2'
+     deltar =  0.0408979 +/- 0.0021756  := 'delr_Pt_2'
+     sigma2 =  0.0077789 +/- 3.8212e-4  := 'abs(ss2_Pt_2)'
+
+=======================================================
+

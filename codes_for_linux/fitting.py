@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from larch import Group
-from zanes.zanes.data_analysis import data_processing as dp
-from zanes.zanes.data_analysis import zanes_data_analysis as zda
+from zanes.data_analysis import data_processing as dp
+from zanes.data_analysis import zanes_data_analysis as zda
 import matplotlib.pyplot as plt
 import yaml
 import toml

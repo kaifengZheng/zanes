@@ -1,0 +1,59 @@
+chi_square = [ "np.float32(1001.6511)",]
+"reduced chi_square" = [ "np.float32(24.340649)",]
+r_factor = [ "np.float32(0.009449)",]
+
+[SO2]
+value = [ 0.84,]
+stderr = [ "np.float64(0.0)",]
+
+[dele]
+value = [ -3.0816760082740546,]
+stderr = [ "np.float64(0.24251095784229407)",]
+
+[ss2_Pt.ss2_Pt_0]
+value = 0.006215947157336275
+stderr = "np.float64(0.00033247532296053515)"
+
+[ss2_Pt.ss2_Pt_1]
+value = 0.005287208904508957
+stderr = "np.float64(0.0003373295315596822)"
+
+[ss2_Pt.ss2_Pt_2]
+value = 0.007778855021260809
+stderr = "np.float64(0.00038211741583058726)"
+
+[N_Pt.N_Pt_0]
+value = 8.441899555679969
+stderr = "np.float64(0.467293767575241)"
+
+[N_Pt.N_Pt_1]
+value = 10.441034576555836
+stderr = "np.float64(0.6220556703495695)"
+
+[N_Pt.N_Pt_2]
+value = 8.321508034708064
+stderr = "np.float64(0.47973481889573016)"
+
+[delr_Pt.delr_Pt_0]
+value = -0.032439773283772094
+stderr = "np.float64(0.001856538220535729)"
+
+[delr_Pt.delr_Pt_1]
+value = -0.034257946242121896
+stderr = "np.float64(0.0018001670652844526)"
+
+[delr_Pt.delr_Pt_2]
+value = 0.04089789014827425
+stderr = "np.float64(0.0021755894401326767)"
+
+[r_Pt.r_Pt_0]
+value = 2.7374602267162276
+stderr = "np.float64(0.001856538220535729)"
+
+[r_Pt.r_Pt_1]
+value = 2.735642053757878
+stderr = "np.float64(0.0018001670652844526)"
+
+[r_Pt.r_Pt_2]
+value = 2.810797890148274
+stderr = "np.float64(0.0021755894401326767)"

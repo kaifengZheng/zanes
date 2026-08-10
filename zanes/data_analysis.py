@@ -43,7 +43,7 @@ def data_processing(
 
     Args:
     - group: dictionary containing energy and mu data
-    - e0: edge energy NOTE: e0 can be slightly different from given value, 
+    - e0: edge energy NOTE: e0 can be slightly different from given value,
           since the algorithm in the pre-edge map the given e0 to the nearest energy point.
     - pre_start: start of the pre-edge region
     - pre_end: end of the pre-edge region
@@ -209,57 +209,97 @@ def data_analysis_xanes(
         print(f"E0={group.e0}")  # Print edge jump energy
 
 
-def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk=1,dr=0,windows='hanning',original=True,plot_spec=dict()):
-     '''
-     plot_spec: {rrange=[],krange=[]}
-     '''
-     print(group)
-     xftf(group.k,group.chi, kmin=kmin, kmax=kmax, dk=dk, window=windows,
-          kweight=kweight, group=group)
-     xftr(group.r,group.chir, rmin=rmin, rmax=rmax, dr=dr, window=windows,group=group)
-     fig, ax = plt.subplots(2,2, figsize=(8,8), gridspec_kw={'width_ratios': [1, 4],'height_ratios': [4, 1]})
-     k2chi=group.k*group.k*group.chi
-     #morlet_wavelet(k=group.q,chi=group.chiq,group=group,kweight=0)
-     if original==True:
-         X, Y =np.meshgrid(group.k, group.r)
-         cauchy_wavelet(k=group.k,chi=group.chi*group.k**kweight*group.kwin,group=group,)
-     else:
-         X, Y =np.meshgrid(group.q, group.r)
-         cauchy_wavelet(k=group.q,chi=group.chiq,group=group)
+def wavelet_transform(
+    group,
+    kmin=0,
+    kmax=20,
+    rmin=0,
+    rmax=20,
+    kweight=0,
+    rweight=0,
+    dk=1,
+    dr=0,
+    windows="hanning",
+    original=True,
+    plot_spec=dict(),
+):
+    """
+    plot_spec: {rrange=[],krange=[]}
+    """
+    print(group)
+    xftf(
+        group.k,
+        group.chi,
+        kmin=kmin,
+        kmax=kmax,
+        dk=dk,
+        window=windows,
+        kweight=kweight,
+        group=group,
+    )
+    xftr(group.r, group.chir, rmin=rmin, rmax=rmax, dr=dr, window=windows, group=group)
+    fig, ax = plt.subplots(
+        2,
+        2,
+        figsize=(8, 8),
+        gridspec_kw={"width_ratios": [1, 4], "height_ratios": [4, 1]},
+    )
+    k2chi = group.k * group.k * group.chi
+    # morlet_wavelet(k=group.q,chi=group.chiq,group=group,kweight=0)
+    if original == True:
+        X, Y = np.meshgrid(group.k, group.r)
+        cauchy_wavelet(
+            k=group.k,
+            chi=group.chi * group.k**kweight * group.kwin,
+            group=group,
+        )
+    else:
+        X, Y = np.meshgrid(group.q, group.r)
+        cauchy_wavelet(k=group.q, chi=group.chiq, group=group)
 
-     kwinmax=np.max(group.kwin)
-     kmax=np.max(group.chi*group.k**kweight)
-     rwinmax=np.max(group.rwin)
-     rmax=np.max(group.chir_mag)
+    kwinmax = np.max(group.kwin)
+    kmax = np.max(group.chi * group.k**kweight)
+    rwinmax = np.max(group.rwin)
+    rmax = np.max(group.chir_mag)
 
-     # ax[0,1].contourf(, Y/2,coef,cmap='jet',levels=200, vmax=abs(coef).max(), vmin=-abs(coef).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
-     # plt.imshow(back_f.wcauchy_mag,label='Wavelet Transform: Magnitude')
-     cf=ax[0,1].contourf(X,Y,group.wcauchy_mag,cmap='jet',levels=200, vmax=abs(group.wcauchy_re).max(), vmin=-abs(group.wcauchy_re).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
-     cbar=fig.colorbar(cf,ax=ax[0,1],orientation='vertical',fraction=0.05,pad=0.04)
-     ax[0,0].plot(group.chir_mag,group.r)
-     if original==False:
-         ax[0,0].plot(group.rwin*rmax/rwinmax,group.r)
-     # ax[0,0].invert_xaxis()
-     ax[0,0].set_ylabel('r')
-     ax[0,0].sharey(ax[0,1])
-     ax[1,1].set_xlabel('k')
-     ax[1,1].sharex(ax[0,1])
-     if original==True:
-         ax[1,1].plot(group.k,group.k**kweight*group.chi)
-         ax[1,1].plot(group.k,group.kwin*kmax/kwinmax,'r-')
-         ax[1,1].plot(group.k,group.kwin*group.chi*group.k**kweight,'g--')
-     if original==False:
-         ax[1,1].plot(group.q,group.chiq)
+    # ax[0,1].contourf(, Y/2,coef,cmap='jet',levels=200, vmax=abs(coef).max(), vmin=-abs(coef).min())#,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+    # plt.imshow(back_f.wcauchy_mag,label='Wavelet Transform: Magnitude')
+    cf = ax[0, 1].contourf(
+        X,
+        Y,
+        group.wcauchy_mag,
+        cmap="jet",
+        levels=200,
+        vmax=abs(group.wcauchy_re).max(),
+        vmin=-abs(group.wcauchy_re).min(),
+    )  # ,vmin=a0bs(coef).min(),vmax=abs(coef).max())
+    cbar = fig.colorbar(
+        cf, ax=ax[0, 1], orientation="vertical", fraction=0.05, pad=0.04
+    )
+    ax[0, 0].plot(group.chir_mag, group.r)
+    if original == False:
+        ax[0, 0].plot(group.rwin * rmax / rwinmax, group.r)
+    # ax[0,0].invert_xaxis()
+    ax[0, 0].set_ylabel("r")
+    ax[0, 0].sharey(ax[0, 1])
+    ax[1, 1].set_xlabel("k")
+    ax[1, 1].sharex(ax[0, 1])
+    if original == True:
+        ax[1, 1].plot(group.k, group.k**kweight * group.chi)
+        ax[1, 1].plot(group.k, group.kwin * kmax / kwinmax, "r-")
+        ax[1, 1].plot(group.k, group.kwin * group.chi * group.k**kweight, "g--")
+    if original == False:
+        ax[1, 1].plot(group.q, group.chiq)
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
-     ax[0,1].set_ylim(plot_spec['rrange'][0],plot_spec['rrange'][1])
-     ax[0,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
-     
-     ax[1,0].remove()
-     ax[1,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
-     ax[1,1].set_ylim(-kmax*1.1, kmax*1.1)
+    ax[0, 1].set_ylim(plot_spec["rrange"][0], plot_spec["rrange"][1])
+    ax[0, 1].set_xlim(plot_spec["krange"][0], plot_spec["krange"][1])
+
+    ax[1, 0].remove()
+    ax[1, 1].set_xlim(plot_spec["krange"][0], plot_spec["krange"][1])
+    ax[1, 1].set_ylim(-kmax * 1.1, kmax * 1.1)
 
 
-def plot_multi_spectrum(groupset, krange=[2, 12],kweight=2):
+def plot_multi_spectrum(groupset, krange=[2, 12], kweight=2):
     # Create subplots with 2 rows and 2 columns
     fig, ax = plt.subplots(2, 2, figsize=(8, 5))
 
@@ -500,7 +540,8 @@ class zanes_data_analysis:
                             label=keys[i],
                         )
                     )
-    def read_from_table(self,table,read_range):
+
+    def read_from_table(self, table, read_range):
         if isinstance(read_range, int):
             scan = 0
         elif isinstance(read_range, list) and len(read_range) == 2:
@@ -511,10 +552,7 @@ class zanes_data_analysis:
         else:
             raise ValueError("read_range is wrong!")
         keys = table.keys()
-        if (
-            not isinstance(read_range, (list, np.ndarray))
-            and read_range is not None
-        ):
+        if not isinstance(read_range, (list, np.ndarray)) and read_range is not None:
             for i in range(1, len(keys)):
 
                 self.data.append(
@@ -545,6 +583,7 @@ class zanes_data_analysis:
                         label=keys[i],
                     )
                 )
+
     def read_data_raw(self, filename: str) -> pd.DataFrame:
         """
         Read raw data from ProQEXAFS data file, using a very greedy way!
@@ -564,17 +603,22 @@ class zanes_data_analysis:
                         dict_data[j] = []
                     dict_data[j].append(float(data_lines[j]))
         return pd.DataFrame(dict_data)
-    def deglitch_k(self, act_range,data_dict,kweight=0,window_length=10,polyorder=3):
+
+    def deglitch_k(
+        self, act_range, data_dict, kweight=0, window_length=10, polyorder=3
+    ):
         for i in range(len(self.data)):
-            k=self.data[i].k
-            chi=self.data[i].chi
-            chi_de=deglitch_Sfilter(k,k**kweight*chi,act_range,window_length,polyorder)
-            self.data[i].chi=chi_de
+            k = self.data[i].k
+            chi = self.data[i].chi
+            chi_de = deglitch_Sfilter(
+                k, k**kweight * chi, act_range, window_length, polyorder
+            )
+            self.data[i].chi = chi_de
             xftf(
                 k=self.data[i].k,
                 chi=self.data[i].chi,
                 dk=2,
-                kweight=data_dict['kweight'],
+                kweight=data_dict["kweight"],
                 group=self.data[i],
                 kmin=data_dict["krange"][0],
                 kmax=data_dict["krange"][1],
@@ -582,76 +626,148 @@ class zanes_data_analysis:
                 window="hanning",
             )
 
-    def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95},name="",save_plot=False,save_plot_format='eps'):
+    def remove_outliers(
+        self,
+        rrange=[],
+        pop=False,
+        plot=False,
+        method={"name": "max", "quantile": 0.95},
+        name="",
+        save_plot=False,
+        save_plot_format="eps",
+    ):
         """
-            method={'name':'running_mean','num':5,'delta':0}
-            method={'name':'max',"quantile":0.95}
+        method={'name':'running_mean','num':5,'delta':0}
+        method={'name':'max',"quantile":0.95}
 
         """
-        def running_mean(dist,num):
-            mean_array=[]
-            std_array=[]
+
+        def running_mean(dist, num):
+            mean_array = []
+            std_array = []
             for i in range(len(dist)):
 
-                if num+i+1<=len(dist):
-                    limit=np.quantile(dist[i:i+num+1],0.95)
+                if num + i + 1 <= len(dist):
+                    limit = np.quantile(dist[i : i + num + 1], 0.95)
                     # print(dist[i:i+num+1])
                     # calculate mean and std dev. no influence from outliers
-                    mean_array.append(np.mean([dist[i:i+num+1][j] for j in range(num+1) if dist[i:i+num+1][j]<limit]))
-                    std_array.append(np.std([dist[i:i+num+1][j] for j in range(num+1) if dist[i:i+num+1][j]<limit]))
+                    mean_array.append(
+                        np.mean(
+                            [
+                                dist[i : i + num + 1][j]
+                                for j in range(num + 1)
+                                if dist[i : i + num + 1][j] < limit
+                            ]
+                        )
+                    )
+                    std_array.append(
+                        np.std(
+                            [
+                                dist[i : i + num + 1][j]
+                                for j in range(num + 1)
+                                if dist[i : i + num + 1][j] < limit
+                            ]
+                        )
+                    )
                 else:
-                    limit=np.quantile(dist[i:len(dist)],0.95)
-                    mean_array.append(np.mean([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
-                    std_array.append(np.std([dist[i:len(dist)][j] for j in range(len(dist)-i) if dist[i:len(dist)][j]<limit]))
-            return mean_array,std_array
+                    limit = np.quantile(dist[i : len(dist)], 0.95)
+                    mean_array.append(
+                        np.mean(
+                            [
+                                dist[i : len(dist)][j]
+                                for j in range(len(dist) - i)
+                                if dist[i : len(dist)][j] < limit
+                            ]
+                        )
+                    )
+                    std_array.append(
+                        np.std(
+                            [
+                                dist[i : len(dist)][j]
+                                for j in range(len(dist) - i)
+                                if dist[i : len(dist)][j] < limit
+                            ]
+                        )
+                    )
+            return mean_array, std_array
 
-        rspace=[]
+        rspace = []
         for i in range(len(self.data)):
-            index=np.where((self.data[i].r<rrange[1]) & (self.data[i].r>rrange[0]))[0]
-            rspace.append(self.data[i].chir_mag[index[0]:index[-1]])
+            index = np.where(
+                (self.data[i].r < rrange[1]) & (self.data[i].r > rrange[0])
+            )[0]
+            rspace.append(self.data[i].chir_mag[index[0] : index[-1]])
 
-        rspace=np.array(rspace)
-        dist_matrix=cdist(rspace,rspace)
-        dist=np.mean(dist_matrix,axis=0)
-        if method['name']=='max':
-            outlier_index=np.where(dist>np.quantile(dist,method['quantile']))[0]
+        rspace = np.array(rspace)
+        dist_matrix = cdist(rspace, rspace)
+        dist = np.mean(dist_matrix, axis=0)
+        if method["name"] == "max":
+            outlier_index = np.where(dist > np.quantile(dist, method["quantile"]))[0]
             print(f"num of outliers:{len(outlier_index)}")
-            data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
-        if method['name']=='running_mean':
-            mean_array,std_array=running_mean(dist,method['num'])
-            mean_array=np.array(mean_array)
-            std_array=np.array(std_array)
-            outlier_index=[]
+            data_remain = [
+                self.data[i] for i in range(len(self.data)) if i not in outlier_index
+            ]
+        if method["name"] == "running_mean":
+            mean_array, std_array = running_mean(dist, method["num"])
+            mean_array = np.array(mean_array)
+            std_array = np.array(std_array)
+            outlier_index = []
 
             for i in range(len(mean_array)):
-                if dist[i]> mean_array[i]+method['delta']*std_array[i] or dist[i]< mean_array[i]-method['delta']*std_array[i]:
+                if (
+                    dist[i] > mean_array[i] + method["delta"] * std_array[i]
+                    or dist[i] < mean_array[i] - method["delta"] * std_array[i]
+                ):
                     outlier_index.append(i)
-            outlier_index=np.array(outlier_index)
+            outlier_index = np.array(outlier_index)
             print(f"num of outliers:{len(outlier_index)}")
-            data_remain=[self.data[i] for i in range(len(self.data)) if i not in outlier_index]
-        if plot==True:
+            data_remain = [
+                self.data[i] for i in range(len(self.data)) if i not in outlier_index
+            ]
+        if plot == True:
             plt.figure()
-            plt.plot(np.arange(len(dist)),dist,label='data',color='cyan',alpha=0.7)
-            plt.plot(outlier_index,dist[outlier_index],".",label='outlier')
-            if method['name']=='running_mean':
-                plt.plot(np.arange(len(self.data)),mean_array,'--',color='red',alpha=0.6,linewidth=2,label='mean')
-                delta=method['delta']
-                plt.fill_between(np.arange(len(self.data)),mean_array-method['delta']*std_array,mean_array+method['delta']*std_array,color='orange',alpha=0.5,label=f'mean$\pm${delta}$\sigma$')
+            plt.plot(np.arange(len(dist)), dist, label="data", color="cyan", alpha=0.7)
+            plt.plot(outlier_index, dist[outlier_index], ".", label="outlier")
+            if method["name"] == "running_mean":
+                plt.plot(
+                    np.arange(len(self.data)),
+                    mean_array,
+                    "--",
+                    color="red",
+                    alpha=0.6,
+                    linewidth=2,
+                    label="mean",
+                )
+                delta = method["delta"]
+                plt.fill_between(
+                    np.arange(len(self.data)),
+                    mean_array - method["delta"] * std_array,
+                    mean_array + method["delta"] * std_array,
+                    color="orange",
+                    alpha=0.5,
+                    label=f"mean$\pm${delta}$\sigma$",
+                )
             plt.legend(frameon=False)
             plt.ylabel("distance")
             plt.xlabel("data index")
             plt.title(f"outlier detection: {name}")
-            if save_plot==True:
-                plt.savefig(name+f"_outlier_detection.{save_plot_format}",format=save_plot_format)
+            if save_plot == True:
+                plt.savefig(
+                    name + f"_outlier_detection.{save_plot_format}",
+                    format=save_plot_format,
+                )
 
-        if pop==True:
-            self.data=data_remain
+        if pop == True:
+            self.data = data_remain
             print(f"remain data={len(self.data)}")
         return dist
 
-    def pop_data(self,index):
+    def pop_data(self, index):
         self.data.pop(index)
-    def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
+
+    def process_data(
+        self, data_dict: dict, plot: bool = False, group_plot: bool = False
+    ):
         self.data_processing_params = data_dict
         for d in self.data:
             if "e0" in data_dict.keys():
@@ -668,10 +784,12 @@ class zanes_data_analysis:
                 kweight=data_dict["kweight"],
                 rbkg=data_dict["rbkg"],
                 krange=data_dict["krange"],
-                plot=plot
+                plot=plot,
             )
         if group_plot:
-            plot_multi_spectrum(self.data, krange=data_dict["krange"],kweight=data_dict["kweight"])
+            plot_multi_spectrum(
+                self.data, krange=data_dict["krange"], kweight=data_dict["kweight"]
+            )
 
     def fit_param_batch(self, batch_size: int, **p) -> param_group:
         # keys = p.keys()
@@ -796,7 +914,9 @@ class zanes_data_analysis:
                 dr_k = list(rules["delr"].keys())
                 # print(N_k, SO2_k, dele_k, ss2_k, dr_k)
 
-                total_path_num = int(np.sum([len(fitpath_num[ff]) for ff in range(len(fitpath_num))]))
+                total_path_num = int(
+                    np.sum([len(fitpath_num[ff]) for ff in range(len(fitpath_num))])
+                )
                 # print(total_path_num)
                 # iteration over different paths in the fth folder
                 for j in range(len(fitpath_num[f])):
@@ -901,10 +1021,10 @@ class zanes_data_analysis:
                     paths.append(
                         feffpath(
                             f"{feff_folder[f]}/{feff_paths['file'][fitpath_num[f][j]]}",
-                            s02=s02, #abs(N*SO2)
+                            s02=s02,  # abs(N*SO2)
                             degen=1,
                             e0=dele,
-                            sigma2="abs("+ss2+")",
+                            sigma2="abs(" + ss2 + ")",
                             deltar=delr,
                         )
                     )
@@ -1013,7 +1133,7 @@ class zanes_data_analysis:
         # sa_check2=[]
         special_paths = len(paths) // batch_size
         # print(f"special_paths={special_paths}")
-          # number of specific paths for each data
+        # number of specific paths for each data
         if batch_index * batch_size <= len(self.data) and batch_index < batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, batch_index * batch_size):
@@ -1024,13 +1144,15 @@ class zanes_data_analysis:
                     feffit_dataset(
                         data=self.data[i],
                         pathlist=paths[
-                             batch_add_i * special_paths: (batch_add_i + 1) * special_paths
+                            batch_add_i
+                            * special_paths : (batch_add_i + 1)
+                            * special_paths
                         ],  # [i - (batch_index - 1) * batch_size]]
                         transform=trans,
                     )
                 )
                 batch_add_i += 1
-            #batch_add_i: ith data in the batch
+            # batch_add_i: ith data in the batch
             true_batch_size = batch_size
 
             # linux has problem with global constraints, so need to set fix_unused_variables=False
@@ -1043,18 +1165,20 @@ class zanes_data_analysis:
         if batch_index == batch_num:
             batch_add_i = 0
             for i in range((batch_index - 1) * batch_size, len(self.data)):
-                #last iteration
-                #print(batch_add_i * special_paths, (batch_add_i + 1) * special_paths)
+                # last iteration
+                # print(batch_add_i * special_paths, (batch_add_i + 1) * special_paths)
                 dset.append(
                     feffit_dataset(
                         data=self.data[i],
                         pathlist=paths[
-                            batch_add_i * special_paths: (batch_add_i + 1) * special_paths
+                            batch_add_i
+                            * special_paths : (batch_add_i + 1)
+                            * special_paths
                         ],  # [i - (batch_index - 1) * batch_size]
                         transform=trans,
                     )
                 )
-                #batch_add_i: ith data in the batch
+                # batch_add_i: ith data in the batch
                 batch_add_i += 1
 
             true_batch_size = len(self.data) - batch_size * (batch_index - 1)
@@ -1140,7 +1264,7 @@ class zanes_data_analysis:
                 batch_nums.append(batch_num)
         if write == True:
             self.write_report_mini_batch(save_name, reports, batch_nums)
-        return dsets, outs, reports,paths
+        return dsets, outs, reports, paths
 
     def write_report_mini_batch(self, filename: str, report: list, batch_size: int):
         try:
@@ -1285,20 +1409,20 @@ class zanes_data_analysis:
             for j in range(len(dset[i])):
                 # print((i,len(dset[i]),j))
                 # warning the last dset[i] may have different length than others
-                data_k[self.data[i*len(dset[0])+j].label] = interp1d(
+                data_k[self.data[i * len(dset[0]) + j].label] = interp1d(
                     dset[i][j].data.k,
                     dset[i][j].data.chi
                     * dset[i][j].data.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                data_r[self.data[i*len(dset[0])+j].label] = interp1d(
+                data_r[self.data[i * len(dset[0]) + j].label] = interp1d(
                     dset[i][j].data.r, dset[i][j].data.chir_mag
                 )(rdata)
-                fitted_k[self.data[i*len(dset[0])+j].label] = interp1d(
+                fitted_k[self.data[i * len(dset[0]) + j].label] = interp1d(
                     dset[i][j].model.k,
                     dset[i][j].model.chi
                     * dset[i][j].model.k ** dset[i][j].transform.kweight,
                 )(kdata)
-                fitted_r[self.data[i*len(dset[0])+j].label] = interp1d(
+                fitted_r[self.data[i * len(dset[0]) + j].label] = interp1d(
                     dset[i][j].model.r, dset[i][j].model.chir_mag
                 )(rdata)
         data_k_table = pd.DataFrame(data_k)

@@ -43,7 +43,7 @@ def data_processing(
 
     Args:
     - group: dictionary containing energy and mu data
-    - e0: edge energy NOTE: e0 can be slightly different from given value,
+    - e0: edge energy NOTE: e0 can be slightly different from given value, 
           since the algorithm in the pre-edge map the given e0 to the nearest energy point.
     - pre_start: start of the pre-edge region
     - pre_end: end of the pre-edge region
@@ -253,7 +253,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
      ax[0,1].set_ylim(plot_spec['rrange'][0],plot_spec['rrange'][1])
      ax[0,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
-
+     
      ax[1,0].remove()
      ax[1,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
      ax[1,1].set_ylim(-kmax*1.1, kmax*1.1)
@@ -370,13 +370,13 @@ def BF_analysis(group, kweight=3, rrange=[], krange=[]):
 
 def deglitch_Sfilter(E, mu, act_range=[], window_length=10, polyorder=3):
     min_point = find_nearest_idx(E, act_range[0])
-    if act_range[1] is None:
+    if len(act_range)==1:
         mu_act = mu[min_point:]
     else:
         max_point = find_nearest_idx(E, act_range[1])
         mu_act = mu[min_point:max_point]
     mu_filter = savgol_filter(mu_act, window_length, polyorder)
-    if act_range[1] is None:
+    if len(act_range)==1:
         mu[min_point:] = mu_filter
     else:
         mu[min_point:max_point] = mu_filter
@@ -396,7 +396,9 @@ class zanes_data_analysis:
             self.data = []
         else:
             self.data = data
-
+    def show_datanames(self):
+        for f in self.data:
+            print(f.label)
     def read_datacollection(
         self, filename, datatype: str = "Athena", read_range: int | list[int] = None
     ) -> None:
@@ -569,21 +571,25 @@ class zanes_data_analysis:
             k=self.data[i].k
             chi=self.data[i].chi
             chi_de=deglitch_Sfilter(k,k**kweight*chi,act_range,window_length,polyorder)
-            project=deepcopy(self.data[i])
+            
+            project=Group(
+                k=k,
+                chi=chi_de)
             project.chi=chi_de
             xftf(
                 k=project.k,
                 chi=project.chi,
+                group=project,
                 dk=2,
                 kweight=data_dict['kweight'],
-                group=project,
                 kmin=data_dict["krange"][0],
                 kmax=data_dict["krange"][1],
-                kstep=project.k[2] - project.k[1],
+                kstep=self.data[i].k[2] - self.data[i].k[1],
                 window="hanning",
             )
+            print(project.items())
             self.data[i].chi_deglitch=project.chi
-            self.data[i].chir_deglitch=project.chir
+            self.data[i].chir_deglitch=project.chir    
             self.data[i].chir_mag_deglitch=project.chir_mag
             del(project)
 
@@ -655,7 +661,11 @@ class zanes_data_analysis:
         return dist
 
     def pop_data(self,index):
-        self.data.pop(index)
+        if isinstance(index, int):
+            self.data.pop(index)
+        elif isinstance(index, list):
+            for i in sorted(index, reverse=True):
+                self.data.pop(i)
     def process_data(self, data_dict: dict, plot: bool = False,group_plot: bool = False):
         self.data_processing_params = data_dict
         for d in self.data:

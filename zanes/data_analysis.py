@@ -43,7 +43,7 @@ def data_processing(
 
     Args:
     - group: dictionary containing energy and mu data
-    - e0: edge energy NOTE: e0 can be slightly different from given value, 
+    - e0: edge energy NOTE: e0 can be slightly different from given value,
           since the algorithm in the pre-edge map the given e0 to the nearest energy point.
     - pre_start: start of the pre-edge region
     - pre_end: end of the pre-edge region
@@ -253,7 +253,7 @@ def wavelet_transform(group,kmin=0,kmax=20,rmin=0,rmax=20,kweight=0,rweight=0,dk
     #  ax[1,1].plot(group.k,group.kwin*kmax/kwinmax)
      ax[0,1].set_ylim(plot_spec['rrange'][0],plot_spec['rrange'][1])
      ax[0,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
-     
+
      ax[1,0].remove()
      ax[1,1].set_xlim(plot_spec['krange'][0],plot_spec['krange'][1])
      ax[1,1].set_ylim(-kmax*1.1, kmax*1.1)
@@ -569,18 +569,23 @@ class zanes_data_analysis:
             k=self.data[i].k
             chi=self.data[i].chi
             chi_de=deglitch_Sfilter(k,k**kweight*chi,act_range,window_length,polyorder)
-            self.data[i].chi=chi_de
+            project=deepcopy(self.data[i])
+            project.chi=chi_de
             xftf(
-                k=self.data[i].k,
-                chi=self.data[i].chi,
+                k=project.k,
+                chi=project.chi,
                 dk=2,
                 kweight=data_dict['kweight'],
-                group=self.data[i],
+                group=project,
                 kmin=data_dict["krange"][0],
                 kmax=data_dict["krange"][1],
-                kstep=self.data[i].k[2] - self.data[i].k[1],
+                kstep=project.k[2] - project.k[1],
                 window="hanning",
             )
+            self.data[i].chi_deglitch=project.chi
+            self.data[i].chir_deglitch=project.chir
+            self.data[i].chir_mag_deglitch=project.chir_mag
+            del(project)
 
     def remove_outliers(self,rrange=[],pop=False,plot=False,method={'name':'max',"quantile":0.95},name="",save_plot=False,save_plot_format='eps'):
         """

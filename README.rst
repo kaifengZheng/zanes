@@ -141,7 +141,7 @@ Fitting data
         exp_data=zda()
         exp_data.read_datacollection(filename,datatype='Athena')
         exp_data.process_data(data_param)
-        
+
         dset,out,report,paths=exp_data.run_fit_batch(param_dict,fit_range_param,[[0]],['feff'],save_name=os.path.join(foldername,file_name[:-4]+'_rbkg1_CN_ss.txt'),write=True,mpi=False,core=10,batch_size=3) # We can use paths from different feff calculations.
         report_sort=exp_data.write_sorted_report(out,report,param_dict,paths)                                                 # In this example, there are two paths used in the fitting;
         exp_data.write_fitted_data(dset,filename,foldername,suffix='_rbkg1_CN_ss')                                               # The first one comes from the first path in the 'feff_PtO' calculation
@@ -178,5 +178,3 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
-

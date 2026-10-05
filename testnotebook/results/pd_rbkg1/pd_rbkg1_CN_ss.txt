@@ -11,7 +11,7 @@ batch size: 3
   r-factor             = 0.00944859
   Akaike info crit     = 172.155678
   Bayesian info crit   = 191.503571
- 
+
 [[Parameters]]
   N_Pt_0               =  8.4418996 +/- 0.4672938  (init= 12.000000)
   N_Pt_1               =  10.441035 +/- 0.6220557  (init= 12.000000)
@@ -24,7 +24,7 @@ batch size: 3
   ss2_Pt_0             =  0.0062159 +/- 3.3248e-4  (init= 0.0030000)
   ss2_Pt_1             =  0.0052872 +/- 3.3733e-4  (init= 0.0030000)
   ss2_Pt_2             =  0.0077789 +/- 3.8212e-4  (init= 0.0030000)
- 
+
 [[Correlations]] (unreported correlations are <  0.100)
   N_Pt_1, ss2_Pt_1     =  0.900
   N_Pt_0, ss2_Pt_0     =  0.889
@@ -41,7 +41,7 @@ batch size: 3
   N_Pt_2, delr_Pt_2    =  0.169
   delr_Pt_0, ss2_Pt_0  =  0.166
   delr_Pt_2, ss2_Pt_2  =  0.166
- 
+
 [[Dataset 1 of 3]]
   unique_id            = 'd2ihwenm'
   fit space            = 'r'
@@ -53,7 +53,7 @@ batch size: 3
   epsilon_k            = Array(mean=7.6497e-4, std=5.9221e-4)
   epsilon_r            = 0.0131486
   n_independent        = 17.050
- 
+
 [[Paths]]
  = Path 'p2rcadm7z' Pd K Edge
     feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
@@ -79,7 +79,7 @@ batch size: 3
   epsilon_k            = Array(mean=0.0011209, std=0.0027944)
   epsilon_r            = 0.0192670
   n_independent        = 17.050
- 
+
 [[Paths]]
  = Path 'p2rcadm7z' Pd K Edge
     feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
@@ -105,7 +105,7 @@ batch size: 3
   epsilon_k            = Array(mean=6.2432e-4, std=6.5015e-4)
   epsilon_r            = 0.0107310
   n_independent        = 17.050
- 
+
 [[Paths]]
  = Path 'p2rcadm7z' Pd K Edge
     feffdat file = c:/zkf/github_repo/zanes/testnotebook/feff/feff0001.dat
@@ -121,4 +121,3 @@ batch size: 3
      sigma2 =  0.0077789 +/- 3.8212e-4  := 'abs(ss2_Pt_2)'
 
 =======================================================
-

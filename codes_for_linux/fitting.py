@@ -12,7 +12,6 @@ from os.path import basename, join
 from os import mkdir
 from glob import glob
 
-
 parser = argparse.ArgumentParser(description="multi-dataset EXAFS fitting")
 parser.add_argument("--config", type=str, default="input.yaml", help="config file path")
 parser.add_argument("--input", type=str, default="data", help="input file path")
